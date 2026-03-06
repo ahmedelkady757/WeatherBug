@@ -1,10 +1,15 @@
 package com.example.weatherbug.navigation
 
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import com.example.weatherbug.MainActivity
+import com.example.weatherbug.presentation.splash.view.SplashScreen
 import com.example.weatherbug.util.AppLogger
 
 
@@ -19,13 +24,31 @@ fun NavGraph(
         modifier         = modifier
     ) {
 
+        // ── Splash ───────────────────────────────────────────────────────────
         composable(route = Screen.Splash.route) {
             AppLogger.logNavigation("NavGraph", "Splash")
-            PlaceholderScreen(name = "Splash")
+            SplashScreen(
+                onNavigateToHome = {
+                    AppLogger.logNavigation("NavGraph", "Splash → Home")
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                },
+                onNavigateToMapPicker = {
+                    AppLogger.logNavigation("NavGraph", "Splash → MapPicker")
+                    navController.navigate(Screen.MapPicker.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable(route = Screen.Home.route) {
             AppLogger.logNavigation("NavGraph", "Home")
+            val activity = LocalContext.current as MainActivity
+            LaunchedEffect(Unit) {
+                activity.locationViewModel.checkAndRequestOnLaunch()
+            }
             PlaceholderScreen(name = "Home")
         }
 

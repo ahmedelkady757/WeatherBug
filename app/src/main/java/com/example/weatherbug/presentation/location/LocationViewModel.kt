@@ -31,6 +31,7 @@ class LocationViewModel(
 
 
     private val _permissionState = MutableStateFlow<PermissionState>(PermissionState.Idle)
+    val permissionState: StateFlow<PermissionState> = _permissionState.asStateFlow()
 
 
     private val _locationState = MutableStateFlow<LocationState>(LocationState.Idle)
@@ -43,6 +44,7 @@ class LocationViewModel(
 
     init {
         viewModelScope.launch {
+            // sync permission state with what's saved in DataStore
             val gpsEnabled = dataStore.gpsEnabledFlow.first()
             _permissionState.value = if (gpsEnabled) {
                 PermissionState.Granted
@@ -56,6 +58,38 @@ class LocationViewModel(
         }
     }
 
+
+    fun checkAndRequestOnLaunch() {
+        viewModelScope.launch {
+            val locationMode = dataStore.locationModeFlow.first()
+            val gpsEnabled   = dataStore.gpsEnabledFlow.first()
+
+            AppLogger.logVmEvent(
+                "LocationViewModel",
+                "checkAndRequestOnLaunch locationMode=$locationMode gpsEnabled=$gpsEnabled"
+            )
+
+            when {
+                locationMode == com.example.weatherbug.util.Constants.LOCATION_MAP -> {
+                    AppLogger.logVmEvent("LocationViewModel", "map mode → skip")
+                    _locationState.value = LocationState.Success(
+                        lat = dataStore.savedLatFlow.first(),
+                        lon = dataStore.savedLonFlow.first()
+                    )
+                }
+
+                !gpsEnabled -> {
+                    AppLogger.logVmEvent("LocationViewModel", "gpsEnabled=false → requesting permission")
+                    _shouldRequestPermission.emit(true)
+                }
+
+                else -> {
+                    AppLogger.logVmEvent("LocationViewModel", "gpsEnabled=true → silent refresh")
+                    fetchAndSaveLocation()
+                }
+            }
+        }
+    }
 
     fun requestPermission() {
         viewModelScope.launch {
@@ -80,7 +114,17 @@ class LocationViewModel(
             AppLogger.logVmEvent("LocationViewModel", "onPermissionDenied()")
             dataStore.saveGpsEnabled(false)
             _permissionState.value = PermissionState.Denied
-            _locationState.value = LocationState.Error("Location permission denied")
+
+            val savedLat = dataStore.savedLatFlow.first()
+            val savedLon = dataStore.savedLonFlow.first()
+
+            AppLogger.logVmEvent(
+                "LocationViewModel",
+                "onPermissionDenied → using lat=$savedLat lon=$savedLon"
+            )
+
+            dataStore.saveLocation(savedLat, savedLon)
+            _locationState.value = LocationState.Success(savedLat, savedLon)
         }
     }
 
@@ -89,12 +133,10 @@ class LocationViewModel(
         viewModelScope.launch {
             val gpsEnabled = dataStore.gpsEnabledFlow.first()
             AppLogger.logVmEvent("LocationViewModel", "refreshLocation() gpsEnabled=$gpsEnabled")
-
             if (!gpsEnabled) {
                 _locationState.value = LocationState.Error("GPS disabled — using saved coords")
                 return@launch
             }
-
             fetchAndSaveLocation()
         }
     }
@@ -105,7 +147,6 @@ class LocationViewModel(
         _locationState.value = LocationState.Loading
         AppLogger.logVmEvent("LocationViewModel", "fetchAndSaveLocation() — trying lastLocation")
 
-        // 1. try last known location (fast, no battery cost)
         val lastLocation = suspendCancellableCoroutine { cont ->
             fusedClient.lastLocation
                 .addOnSuccessListener { loc ->
@@ -146,7 +187,6 @@ class LocationViewModel(
         if (freshLocation != null) {
             saveAndEmit(freshLocation.latitude, freshLocation.longitude)
         } else {
-            // 3. both attempts failed — fall back to DataStore saved coords
             AppLogger.logVmEvent("LocationViewModel", "both attempts failed → using DataStore coords")
             val savedLat = dataStore.savedLatFlow.first()
             val savedLon = dataStore.savedLonFlow.first()
@@ -160,7 +200,6 @@ class LocationViewModel(
         _locationState.value = LocationState.Success(lat, lon)
     }
 }
-
 
 
 class LocationViewModelFactory(
