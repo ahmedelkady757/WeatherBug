@@ -11,4 +11,7 @@
     <string name="nav_alerts">Alerts</string>
     <string name="nav_settings">Settings</string>
 
+
+    <string name="splash_tagline">Your weather, anywhere.</string>
+
 </resources>
