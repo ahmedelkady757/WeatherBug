@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WeatherBug</string>
+
+
     <string name="no_internet_title">No Internet Connection</string>
     <string name="no_internet_subtitle">Please check your connection and try again</string>
     <string name="no_internet_icon_desc">No internet connection icon</string>
+
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_favourites">المفضلة</string>
+    <string name="nav_alerts">التنبيهات</string>
+    <string name="nav_settings">الإعدادات</string>
+
 </resources>
