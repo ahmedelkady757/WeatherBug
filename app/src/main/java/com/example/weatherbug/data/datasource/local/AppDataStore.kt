@@ -30,6 +30,8 @@ class AppDataStore(private val context: Context) {
         val KEY_SAVED_LAT      = doublePreferencesKey(Constants.KEY_SAVED_LAT)
         val KEY_SAVED_LON      = doublePreferencesKey(Constants.KEY_SAVED_LON)
         val KEY_IS_FIRST_LAUNCH = booleanPreferencesKey(Constants.KEY_IS_FIRST_LAUNCH)
+
+        private val KEY_GPS_ENABLED = booleanPreferencesKey(Constants.KEY_GPS_ENABLED)
     }
 
 
@@ -147,6 +149,22 @@ class AppDataStore(private val context: Context) {
         context.dataStore.edit { prefs ->
             prefs[KEY_IS_FIRST_LAUNCH] = false
             AppLogger.logDataStoreWrite(Constants.KEY_IS_FIRST_LAUNCH, false)
+        }
+    }
+
+    val gpsEnabledFlow: Flow<Boolean> = context.dataStore.data
+        .catch { e -> AppLogger.logDataStoreError(Constants.KEY_GPS_ENABLED, e) }
+        .map { prefs ->
+            val value = prefs[KEY_GPS_ENABLED] ?: false  // default false = not yet granted
+            AppLogger.logDataStoreRead(Constants.KEY_GPS_ENABLED, value)
+            value
+        }
+
+    // write
+    suspend fun saveGpsEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_GPS_ENABLED] = enabled
+            AppLogger.logDataStoreWrite(Constants.KEY_GPS_ENABLED, enabled)
         }
     }
 }

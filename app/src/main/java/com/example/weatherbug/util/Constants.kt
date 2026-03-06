@@ -36,7 +36,7 @@ object Constants {
 
     const val LOCATION_GPS = "gps"
     const val LOCATION_MAP = "map"
-
+    const val KEY_GPS_ENABLED = "gps_enabled"
     const val HOURLY_COUNT  = 24
     const val DAILY_COUNT   = 7
     const val GEO_LIMIT     = 5

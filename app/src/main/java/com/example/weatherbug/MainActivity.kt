@@ -1,9 +1,12 @@
 package com.example.weatherbug
 
+import android.Manifest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -24,25 +27,59 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.weatherbug.navigation.NavGraph
 import com.example.weatherbug.navigation.Screen
+import com.example.weatherbug.presentation.location.LocationViewModel
+import com.example.weatherbug.presentation.location.LocationViewModelFactory
 import com.example.weatherbug.ui.theme.WeatherBugTheme
 import com.example.weatherbug.util.AppLogger
-
+import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
+
+    val locationViewModel: LocationViewModel by viewModels {
+        LocationViewModelFactory(this)
+    }
+
+
+    private val locationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+                || permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        AppLogger.logVmEvent("MainActivity", "permission result: granted=$granted")
+        if (granted) locationViewModel.onPermissionGranted()
+        else         locationViewModel.onPermissionDenied()
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         AppLogger.logVmEvent("MainActivity", "onCreate")
-
+        observePermissionRequests()
         setContent {
             WeatherBugTheme {
                 val navController = rememberNavController()
                 WeatherBugApp(navController = navController)
+            }
+        }
+    }
+    private fun observePermissionRequests() {
+        lifecycleScope.launch {
+            locationViewModel.shouldRequestPermission.collect { should ->
+                if (should) {
+                    AppLogger.logVmEvent("MainActivity", "launching permission dialog")
+                    locationPermissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
+                }
             }
         }
     }
