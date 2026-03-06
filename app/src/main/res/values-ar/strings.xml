@@ -14,4 +14,13 @@
 
     <string name="splash_tagline">طقسك، في أي مكان.</string>
 
+    <string name="home_feels_like">يبدو كـ %1$d°</string>
+    <string name="home_humidity">الرطوبة</string>
+    <string name="home_wind">الرياح</string>
+    <string name="home_pressure">الضغط</string>
+    <string name="home_clouds">الغيوم</string>
+    <string name="home_hourly_forecast">التوقعات بالساعة</string>
+    <string name="home_daily_forecast">توقعات 7 أيام</string>
+    <string name="home_retry">إعادة المحاولة</string>
+
 </resources>

@@ -1,6 +1,7 @@
 package com.example.weatherbug.navigation
 
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -9,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import com.example.weatherbug.MainActivity
+import com.example.weatherbug.presentation.home.view.HomeScreen
 import com.example.weatherbug.presentation.splash.view.SplashScreen
 import com.example.weatherbug.util.AppLogger
 
@@ -45,12 +47,13 @@ fun NavGraph(
 
         composable(route = Screen.Home.route) {
             AppLogger.logNavigation("NavGraph", "Home")
-            val activity = LocalContext.current as MainActivity
+            val activity = LocalActivity.current as MainActivity
             LaunchedEffect(Unit) {
                 activity.locationViewModel.checkAndRequestOnLaunch()
             }
-            PlaceholderScreen(name = "Home")
+            HomeScreen()
         }
+
 
         composable(route = Screen.Favourites.route) {
             AppLogger.logNavigation("NavGraph", "Favourites")
