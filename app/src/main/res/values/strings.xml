@@ -14,4 +14,13 @@
 
     <string name="splash_tagline">Your weather, anywhere.</string>
 
+    <string name="home_feels_like">Feels like %1$d°</string>
+    <string name="home_humidity">Humidity</string>
+    <string name="home_wind">Wind</string>
+    <string name="home_pressure">Pressure</string>
+    <string name="home_clouds">Clouds</string>
+    <string name="home_hourly_forecast">Hourly Forecast</string>
+    <string name="home_daily_forecast">7-Day Forecast</string>
+    <string name="home_retry">Retry</string>
+
 </resources>
