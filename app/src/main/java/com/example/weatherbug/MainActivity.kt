@@ -131,7 +131,6 @@ fun WeatherBugBottomNav(
                     if (!isSelected) {
                         AppLogger.logNavigation("BottomNav", item.route)
                         navController.navigate(item.route) {
-                            // pop up to Home to avoid building a large back stack
                             popUpTo(Screen.Home.route) {
                                 saveState = true
                             }
