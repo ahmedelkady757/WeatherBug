@@ -31,7 +31,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,21 +53,41 @@ import com.example.weatherbug.data.models.DailyForecastResponse
 import com.example.weatherbug.data.models.HourlyForecastResponse
 import com.example.weatherbug.data.models.WeatherResponse
 import com.example.weatherbug.presentation.home.viewmodel.HomeViewModel
+import com.example.weatherbug.presentation.location.LocationViewModel
+import com.example.weatherbug.util.Constants
 import com.example.weatherbug.util.DateFormatter
 import com.example.weatherbug.util.ResponseState
 import com.example.weatherbug.util.WeatherIconMapper
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
 
 
 @Composable
 fun HomeScreen(
+    locationViewModel: LocationViewModel
 ) {
     val viewModel: HomeViewModel = koinViewModel()
 
     val currentWeather by viewModel.currentWeatherState.collectAsStateWithLifecycle()
     val hourlyState    by viewModel.hourlyState.collectAsStateWithLifecycle()
     val dailyState     by viewModel.dailyState.collectAsStateWithLifecycle()
+    val appLang        by viewModel.appLanguage.collectAsStateWithLifecycle()
+    val tempUnit       by viewModel.tempUnit.collectAsStateWithLifecycle()
+    val windUnitLabel  = if (tempUnit == Constants.UNIT_IMPERIAL) {
+        Constants.WIND_IMPERIAL_LABEL
+    } else {
+        Constants.WIND_METRIC_IMPERIAL_LABEL
+    }
+
+    var currentTimeMillis by remember { mutableStateOf(System.currentTimeMillis()) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            currentTimeMillis = System.currentTimeMillis()
+            delay(60_000L)
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -80,8 +104,15 @@ fun HomeScreen(
                 onRetry = { viewModel.retry() }
             )
             is ResponseState.Success -> {
-                CurrentWeatherCard(data = state.data)
-                StatsRow(data = state.data)
+                CurrentWeatherCard(
+                    data             = state.data,
+                    appLang          = appLang,
+                    currentTimeEpoch = currentTimeMillis / 1000
+                )
+                StatsRow(
+                    data          = state.data,
+                    windUnitLabel = windUnitLabel
+                )
             }
         }
 
@@ -94,7 +125,10 @@ fun HomeScreen(
         when (val state = dailyState) {
             is ResponseState.Loading -> LoadingCard(modifier = Modifier.height(240.dp))
             is ResponseState.Failure -> Unit
-            is ResponseState.Success -> DailyForecastList(items = state.data.list)
+            is ResponseState.Success -> DailyForecastList(
+                items   = state.data.list,
+                appLang = appLang
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -103,9 +137,14 @@ fun HomeScreen(
 
 
 @Composable
-private fun CurrentWeatherCard(data: WeatherResponse) {
+private fun CurrentWeatherCard(
+    data:             WeatherResponse,
+    appLang:          String,
+    currentTimeEpoch: Long
+) {
     val condition = data.weather.firstOrNull()
-
+    val amLabel   = stringResource(R.string.home_am)
+    val pmLabel   = stringResource(R.string.home_pm)
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(24.dp),
@@ -128,7 +167,6 @@ private fun CurrentWeatherCard(data: WeatherResponse) {
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                // location + date row
                 Row(
                     modifier          = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -148,11 +186,7 @@ private fun CurrentWeatherCard(data: WeatherResponse) {
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text  = DateFormatter.formatDate(
-                            dt = data.dt,
-                            am = stringResource(R.string.home_am),
-                            pm = stringResource(R.string.home_pm)
-                        ),
+                        text  = formatDate(currentTimeEpoch, appLang, amLabel, pmLabel),
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.8f)
                     )
@@ -202,7 +236,10 @@ private fun CurrentWeatherCard(data: WeatherResponse) {
 }
 
 @Composable
-private fun StatsRow(data: WeatherResponse) {
+private fun StatsRow(
+    data:          WeatherResponse,
+    windUnitLabel: String
+) {
     Row(
         modifier              = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -217,7 +254,7 @@ private fun StatsRow(data: WeatherResponse) {
             modifier = Modifier.weight(1f),
             icon     = R.drawable.ic_stat_wind,
             label    = stringResource(R.string.home_wind),
-            value    = "${data.wind.speed} m/s"
+            value    = "${data.wind.speed} $windUnitLabel"
         )
         data.main.pressure.let {
             when {
@@ -354,7 +391,10 @@ private fun HourlyItem(item: HourlyForecastResponse.HourlyItem) {
 
 
 @Composable
-private fun DailyForecastList(items: List<DailyForecastResponse.DailyItem>) {
+private fun DailyForecastList(
+    items:   List<DailyForecastResponse.DailyItem>,
+    appLang: String
+) {
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(20.dp),
@@ -371,7 +411,7 @@ private fun DailyForecastList(items: List<DailyForecastResponse.DailyItem>) {
             )
             Spacer(modifier = Modifier.height(12.dp))
             items.forEachIndexed { index, item ->
-                DailyItem(item = item)
+                DailyItem(item = item, appLang = appLang)
                 if (index < items.lastIndex) {
                     HorizontalDivider(
                         modifier  = Modifier.padding(vertical = 8.dp),
@@ -385,10 +425,12 @@ private fun DailyForecastList(items: List<DailyForecastResponse.DailyItem>) {
 }
 
 @Composable
-private fun DailyItem(item: DailyForecastResponse.DailyItem) {
+private fun DailyItem(
+    item:    DailyForecastResponse.DailyItem,
+    appLang: String
+) {
     val iconCode = item.weather.firstOrNull()?.icon ?: "01d"
-    val dayName  = DateFormatter.formatDayName(item.dt)
-
+    val dayName  = formatDayName(item.dt, appLang)
     Row(
         modifier          = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -480,3 +522,11 @@ private fun ErrorCard(message: String, onRetry: () -> Unit) {
         }
     }
 }
+private fun formatDate(dt: Long, appLang: String, am: String, pm: String) =
+    DateFormatter.formatDate(dt, appLang, am, pm)
+
+private fun formatHourly(dtTxt: String, am: String, pm: String) =
+    DateFormatter.formatHourly(dtTxt, am, pm)
+
+private fun formatDayName(dt: Long, appLang: String) =
+    DateFormatter.formatDayName(dt, appLang)

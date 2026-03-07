@@ -24,4 +24,24 @@
     <string name="home_retry">Retry</string>
     <string name="home_am">AM</string>
     <string name="home_pm">PM</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_lang_english">English</string>
+    <string name="settings_lang_arabic">Arabic</string>
+    <string name="settings_temp_unit">Temperature Unit</string>
+    <string name="settings_unit_celsius">°C</string>
+    <string name="settings_unit_fahrenheit">°F</string>
+    <string name="settings_unit_kelvin">K</string>
+    <string name="settings_location_mode">Location Mode</string>
+    <string name="settings_location_gps">GPS</string>
+    <string name="settings_location_map">Map</string>
+
+    <string name="location_permission_title">Location permission required</string>
+    <string name="location_permission_settings_message">Location access is permanently denied. Please enable it from app settings.</string>
+    <string name="location_permission_open_settings">Open settings</string>
+
 </resources>

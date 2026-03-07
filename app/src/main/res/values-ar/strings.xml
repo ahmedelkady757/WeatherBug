@@ -1,27 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">WeatherBug</string>
 
-
-    <string name="no_internet_title">No Internet Connection</string>
-    <string name="no_internet_subtitle">Please check your connection and try again</string>
-    <string name="no_internet_icon_desc">No internet connection icon</string>
+    <string name="no_internet_title">لا يوجد اتصال بالإنترنت</string>
+    <string name="no_internet_subtitle">من فضلك تحقق من الاتصال وحاول مرة أخرى</string>
+    <string name="no_internet_icon_desc">أيقونة عدم وجود اتصال بالإنترنت</string>
 
     <string name="nav_home">الرئيسية</string>
     <string name="nav_favourites">المفضلة</string>
     <string name="nav_alerts">التنبيهات</string>
     <string name="nav_settings">الإعدادات</string>
 
-    <string name="splash_tagline">طقسك، في أي مكان.</string>
+    <string name="splash_tagline">طقسك في كل مكان</string>
 
-    <string name="home_feels_like">يبدو كـ %1$d°</string>
+    <string name="home_feels_like">محسوس %1$d°</string>
     <string name="home_humidity">الرطوبة</string>
     <string name="home_wind">الرياح</string>
     <string name="home_pressure">الضغط</string>
     <string name="home_clouds">الغيوم</string>
-    <string name="home_hourly_forecast">التوقعات بالساعة</string>
-    <string name="home_daily_forecast">توقعات 7 أيام</string>
+    <string name="home_hourly_forecast">توقعات كل ساعة</string>
+    <string name="home_daily_forecast">توقعات ٧ أيام</string>
     <string name="home_retry">إعادة المحاولة</string>
     <string name="home_am">ص</string>
     <string name="home_pm">م</string>
+
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_theme">المظهر</string>
+    <string name="settings_theme_light">فاتح</string>
+    <string name="settings_theme_dark">داكن</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_lang_english">الإنجليزية</string>
+    <string name="settings_lang_arabic">العربية</string>
+    <string name="settings_temp_unit">وحدة الحرارة</string>
+    <string name="settings_unit_celsius">°م</string>
+    <string name="settings_unit_fahrenheit">°ف</string>
+    <string name="settings_unit_kelvin">كلفن</string>
+    <string name="settings_location_mode">مصدر الموقع</string>
+    <string name="settings_location_gps">GPS</string>
+    <string name="settings_location_map">الخريطة</string>
+
+    <string name="location_permission_title">صلاحية الموقع مطلوبة</string>
+    <string name="location_permission_settings_message">تم رفض صلاحية الموقع بشكل دائم. من فضلك فعّلها من إعدادات التطبيق.</string>
+    <string name="location_permission_open_settings">فتح الإعدادات</string>
+
 </resources>
