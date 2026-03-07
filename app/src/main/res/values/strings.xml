@@ -44,4 +44,17 @@
     <string name="location_permission_settings_message">Location access is permanently denied. Please enable it from app settings.</string>
     <string name="location_permission_open_settings">Open settings</string>
 
+    <string name="favourites_empty_title">No Favourites Yet</string>
+    <string name="favourites_empty_subtitle">Tap + to add your first favourite location</string>
+    <string name="favourites_add">Add Favourite</string>
+    <string name="favourites_delete_item">Delete favourite</string>
+    <string name="favourites_delete_one_title">Remove Favourite?</string>
+    <string name="favourites_delete_one_body">Remove %1$s from your favourites?</string>
+    <string name="favourites_delete_confirm">Delete</string>
+    <string name="favourites_delete_cancel">Cancel</string>
+    <string name="favourites_delete_all_title">Delete All Favourites</string>
+    <string name="favourites_delete_all_body">This will remove all your saved locations. This action cannot be undone.</string>
+    <string name="favourites_delete_all_confirm">Delete All</string>
+    <string name="favourites_delete_all_cancel">Cancel</string>
+
 </resources>

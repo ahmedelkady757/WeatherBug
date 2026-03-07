@@ -10,6 +10,8 @@ import com.example.weatherbug.data.db.WeatherBugDatabase
 import com.example.weatherbug.data.network.RetrofitClient
 import com.example.weatherbug.data.repo.WeatherRepo
 import com.example.weatherbug.data.repo.WeatherRepoImpl
+import com.example.weatherbug.presentation.favourites.viewmodel.FavouriteDetailViewModel
+import com.example.weatherbug.presentation.favourites.viewmodel.FavouritesViewModel
 import com.example.weatherbug.presentation.home.viewmodel.HomeViewModel
 import com.example.weatherbug.presentation.location.LocationViewModel
 import com.example.weatherbug.presentation.settings.viewmodel.SettingsViewModel
@@ -97,6 +99,19 @@ val repoModule = module {
         SettingsViewModel(
             dataStore = get(),
             locationViewModel = locationViewModel
+        )
+    }
+
+
+    viewModel {
+        FavouritesViewModel(repo = get())
+    }
+    viewModel { (lat: Double, lon: Double) ->
+        FavouriteDetailViewModel(
+            lat = lat,
+            lon = lon,
+            repo = get(),
+            dataStore = get()
         )
     }
 }
