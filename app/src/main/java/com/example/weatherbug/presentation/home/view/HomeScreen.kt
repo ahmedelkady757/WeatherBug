@@ -60,6 +60,7 @@ import com.example.weatherbug.util.ResponseState
 import com.example.weatherbug.util.WeatherIconMapper
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
+import java.util.Locale
 import kotlin.math.roundToInt
 
 
@@ -80,16 +81,31 @@ fun HomeScreen(
         Constants.WIND_METRIC_IMPERIAL_LABEL
     }
 
-    var currentTimeMillis by remember { mutableStateOf(System.currentTimeMillis()) }
 
-    LaunchedEffect(Unit) {
-        while (true) {
-            currentTimeMillis = System.currentTimeMillis()
-            delay(60_000L)
-        }
-    }
+
+    WeatherContent(
+        currentWeatherState = currentWeather,
+        hourlyState         = hourlyState,
+        dailyState          = dailyState,
+        appLanguage         = appLang,
+        windUnitLabel       = windUnitLabel,
+        onRetry             = { viewModel.retry() }
+    )
+}
+
+
+@Composable
+fun WeatherContent(
+    currentWeatherState: ResponseState<WeatherResponse>,
+    hourlyState:         ResponseState<HourlyForecastResponse>,
+    dailyState:          ResponseState<DailyForecastResponse>,
+    appLanguage:         String,
+    windUnitLabel:       String,
+    onRetry:             () -> Unit,
+    modifier:            Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
@@ -97,17 +113,17 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        when (val state = currentWeather) {
+        when (val state = currentWeatherState) {
             is ResponseState.Loading -> LoadingCard(modifier = Modifier.height(320.dp))
             is ResponseState.Failure -> ErrorCard(
                 message = state.errorMessage,
-                onRetry = { viewModel.retry() }
+                onRetry = onRetry
             )
             is ResponseState.Success -> {
                 CurrentWeatherCard(
                     data             = state.data,
-                    appLang          = appLang,
-                    currentTimeEpoch = currentTimeMillis / 1000
+                    appLang          = appLanguage,
+                    currentTimeEpoch = System.currentTimeMillis() / 1000
                 )
                 StatsRow(
                     data          = state.data,
@@ -116,6 +132,7 @@ fun HomeScreen(
             }
         }
 
+        // ── Hourly forecast ───────────────────────────────────────────────────
         when (val state = hourlyState) {
             is ResponseState.Loading -> LoadingCard(modifier = Modifier.height(120.dp))
             is ResponseState.Failure -> Unit
@@ -125,10 +142,7 @@ fun HomeScreen(
         when (val state = dailyState) {
             is ResponseState.Loading -> LoadingCard(modifier = Modifier.height(240.dp))
             is ResponseState.Failure -> Unit
-            is ResponseState.Success -> DailyForecastList(
-                items   = state.data.list,
-                appLang = appLang
-            )
+            is ResponseState.Success -> DailyForecastList(items = state.data.list, appLanguage)
         }
 
         Spacer(modifier = Modifier.height(16.dp))

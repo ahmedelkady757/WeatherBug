@@ -34,7 +34,8 @@ class FavouriteDetailViewModel(
     val appLanguage: StateFlow<String> = dataStore.languageFlow
         .stateIn(viewModelScope, SharingStarted.Eagerly, Constants.LANG_ENGLISH)
 
-
+    val tempUnit: StateFlow<String> = dataStore.tempUnitFlow
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Constants.UNIT_METRIC)
     private val _currentWeatherState =
         MutableStateFlow<ResponseState<WeatherResponse>>(ResponseState.Loading)
     val currentWeatherState: StateFlow<ResponseState<WeatherResponse>> =
