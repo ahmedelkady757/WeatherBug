@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.weatherbug.presentation.favourites.view.FavouritesScreen
 import com.example.weatherbug.presentation.home.view.HomeScreen
 import com.example.weatherbug.presentation.location.LocationViewModel
 import com.example.weatherbug.presentation.settings.view.SettingsScreen
@@ -30,7 +31,16 @@ fun NavGraph(
 
         composable(route = Screen.Favourites.route) {
             AppLogger.logNavigation("NavGraph", "Favourites")
-            PlaceholderScreen(name = "Favourites")
+            FavouritesScreen(
+                onAddFavourite = {
+                    AppLogger.logNavigation("NavGraph", "Favourites → MapPicker(favourite)")
+               //     navController.navigate(Screen.MapPicker.createRoute(Screen.MapPicker.MODE_FAVOURITE))
+                },
+                onOpenFavouriteDetail = { lat, lon, cityName ->
+                    AppLogger.logNavigation("NavGraph", "Favourites → FavouriteDetail", "city=$cityName")
+                 //   navController.navigate(Screen.FavouriteDetail.createRoute(lat, lon, cityName))
+                }
+            )
         }
 
         composable(route = Screen.Alerts.route) {
