@@ -86,10 +86,14 @@ class MapPickerViewModel(
     }
 
 
-    fun onPlaceSelected(lat: Double, lon: Double, cityName: String) {
-        AppLogger.logVmEvent("MapPickerViewModel", "onPlaceSelected lat=$lat lon=$lon city=$cityName")
-        _selectedLatLng.value   = LatLng(lat, lon)
-        _resolvedCityName.value = cityName
+    fun onPlaceSelected(item: GeocodingItem, appLanguage: String) {
+        val localizedName = item.localizedName(appLanguage)
+        AppLogger.logVmEvent(
+            "MapPickerViewModel",
+            "onPlaceSelected lat=${item.lat} lon=${item.lon} city=$localizedName"
+        )
+        _selectedLatLng.value   = LatLng(item.lat, item.lon)
+        _resolvedCityName.value = localizedName
     }
 
 
@@ -177,7 +181,9 @@ class MapPickerViewModel(
             _isGeocodingName.value = true
             when (val result = repo.getCityByCoordinates(lat, lon)) {
                 is ResponseState.Success -> {
-                    val name = result.data.firstOrNull()?.name ?: ""
+                    val lang  = dataStore.languageFlow.first()
+                    val first = result.data.firstOrNull()
+                    val name  = first?.localizedName(lang) ?: first?.name.orEmpty()
                     AppLogger.logVmEvent("MapPickerViewModel", "geocoded city: $name")
                     _resolvedCityName.value = name
                 }
@@ -216,13 +222,33 @@ class MapPickerViewModel(
             return
         }
 
-        AppLogger.logVmEvent("MapPickerViewModel", "performSearch query=$query")
+        // Heuristic: for Arabic-only queries without explicit country, bias to Egypt ("EG")
+        val effectiveQuery = if (query.any { it in '\u0600'..'\u06FF' } && !query.contains(',')) {
+            "$query,EG"
+        } else {
+            query
+        }
+
+        AppLogger.logVmEvent("MapPickerViewModel", "performSearch query=$effectiveQuery")
         _isSearching.value = true
 
-        when (val result = repo.getCoordinatesByCity(query, Constants.GEO_LIMIT)) {
+        when (val result = repo.getCoordinatesByCity(effectiveQuery, Constants.GEO_LIMIT)) {
 
             is ResponseState.Success -> {
-                _searchResults.value = result.data
+                val lang          = dataStore.languageFlow.first()
+                val normalizedQ   = query.lowercase()
+                val prioritized   = result.data.sortedWith(
+                    compareByDescending<GeocodingItem> { item ->
+                        val name = item.localizedName(lang).lowercase()
+                        when {
+                            name == normalizedQ              -> 3
+                            name.startsWith(normalizedQ)     -> 2
+                            name.contains(normalizedQ)       -> 1
+                            else                             -> 0
+                        }
+                    }
+                )
+                _searchResults.value = prioritized
                 _searchError.value   = null
                 AppLogger.logVmEvent(
                     "MapPickerViewModel",

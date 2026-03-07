@@ -39,7 +39,8 @@ object Constants {
     const val KEY_GPS_ENABLED = "gps_enabled"
     const val HOURLY_COUNT  = 24
     const val DAILY_COUNT   = 7
-    const val GEO_LIMIT     = 5
+    // Max number of geocoding results to show in map search
+    const val GEO_LIMIT     = 10
 
     const val FALLBACK_LAT  = 30.0444
     const val FALLBACK_LON  = 31.2357

@@ -203,7 +203,7 @@ fun MapPickerScreen(
                         errorMessage = searchError,
                         onItemClick  = { item ->
                             val label = buildPlaceTitle(item, appLanguage)
-                            viewModel.onPlaceSelected(item.lat, item.lon, label)
+                            viewModel.onPlaceSelected(item, appLanguage)
                             query           = label
                             showSuggestions = false
                         }
@@ -265,25 +265,41 @@ private fun SearchTextField(
     query:         String,
     onQueryChange: (String) -> Unit
 ) {
-    OutlinedTextField(
-        value         = query,
-        onValueChange = onQueryChange,
-        modifier      = Modifier.fillMaxWidth(),
-        singleLine    = true,
-        leadingIcon   = {
-            Icon(
-                imageVector        = Icons.Filled.Search,
-                contentDescription = null,
-                tint               = MaterialTheme.colorScheme.onSurfaceVariant
+    Card(
+        modifier  = Modifier
+            .fillMaxWidth(),
+        shape     = MaterialTheme.shapes.large,
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        colors    = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f)
+        )
+    ) {
+        OutlinedTextField(
+            value         = query,
+            onValueChange = onQueryChange,
+            modifier      = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 4.dp),
+            singleLine    = true,
+            leadingIcon   = {
+                Icon(
+                    imageVector        = Icons.Filled.Search,
+                    contentDescription = null,
+                    tint               = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
+            placeholder   = {
+                Text(
+                    text  = stringResource(R.string.map_picker_search_hint),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
+            textStyle     = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onSurface
             )
-        },
-        placeholder   = {
-            Text(
-                text  = stringResource(R.string.map_picker_search_hint),
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-    )
+        )
+    }
 }
 
 

@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.weatherbug.presentation.favourites.view.FavouriteDetailScreen
 import com.example.weatherbug.presentation.favourites.view.FavouritesScreen
 import com.example.weatherbug.presentation.home.view.HomeScreen
 import com.example.weatherbug.presentation.location.LocationViewModel
@@ -35,11 +36,19 @@ fun NavGraph(
             FavouritesScreen(
                 onAddFavourite = {
                     AppLogger.logNavigation("NavGraph", "Favourites → MapPicker(favourite)")
-                    navController.navigate(Screen.MapPicker.createRoute(Screen.MapPicker.MODE_FAVOURITE))
+                    navController.navigate(
+                        Screen.MapPicker.createRoute(Screen.MapPicker.MODE_FAVOURITE)
+                    )
                 },
                 onOpenFavouriteDetail = { lat, lon, cityName ->
-                    AppLogger.logNavigation("NavGraph", "Favourites → FavouriteDetail", "city=$cityName")
-                 //   navController.navigate(Screen.FavouriteDetail.createRoute(lat, lon, cityName))
+                    AppLogger.logNavigation(
+                        "NavGraph",
+                        "Favourites → FavouriteDetail",
+                        "city=$cityName"
+                    )
+                    navController.navigate(
+                        Screen.FavouriteDetail.createRoute(lat, lon, cityName)
+                    )
                 }
             )
         }
@@ -65,9 +74,37 @@ fun NavGraph(
                 ?: Screen.MapPicker.MODE_SETTINGS
             AppLogger.logNavigation("NavGraph", "MapPicker", "mode=$mode")
             MapPickerScreen(
-                mode            = mode,
-                onNavigateBack  = { navController.popBackStack() }
+                mode           = mode,
+                onNavigateBack = { navController.popBackStack() }
             )
+        }
+
+        composable(route = Screen.FavouriteDetail.route) { backStackEntry ->
+            val latArg  = backStackEntry.arguments?.getString("lat")?.toDoubleOrNull()
+            val lonArg  = backStackEntry.arguments?.getString("lon")?.toDoubleOrNull()
+            val rawName = backStackEntry.arguments?.getString("cityName").orEmpty()
+            val city    = Screen.FavouriteDetail.decodeCityName(rawName)
+
+            if (latArg == null || lonArg == null) {
+                AppLogger.logNavigation(
+                    "NavGraph",
+                    "FavouriteDetail",
+                    "Missing or invalid lat/lon, popping back stack"
+                )
+                navController.popBackStack()
+            } else {
+                AppLogger.logNavigation(
+                    "NavGraph",
+                    "FavouriteDetail",
+                    "lat=$latArg lon=$lonArg city=$city"
+                )
+                FavouriteDetailScreen(
+                    lat            = latArg,
+                    lon            = lonArg,
+                    cityName       = city,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
         }
     }
 }
