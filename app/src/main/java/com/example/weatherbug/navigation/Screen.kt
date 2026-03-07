@@ -11,6 +11,8 @@ sealed class Screen(val route: String) {
     data object Alerts      : Screen("alerts")
     data object Settings    : Screen("settings")
 
+    data object MapPicker : Screen("map_picker")
+
     data object FavouriteDetail : Screen("favourite_detail/{lat}/{lon}/{cityName}") {
         fun createRoute(lat: Double, lon: Double, cityName: String): String {
             val encoded = URLEncoder.encode(cityName, "UTF-8")

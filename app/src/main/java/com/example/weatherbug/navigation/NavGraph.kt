@@ -54,7 +54,7 @@ fun NavGraph(
                 locationViewModel     = locationViewModel,
                 onNavigateToMapPicker = {
                     AppLogger.logNavigation("NavGraph", "Settings → MapPicker")
-                    navController.navigate(Screen.MapPicker.route)
+                   // navController.navigate(Screen.MapPicker.route)
                 }
             )
         }
