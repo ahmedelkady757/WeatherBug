@@ -58,5 +58,10 @@
     <string name="favourites_delete_all_cancel">Cancel</string>
 
 
+    <string name="map_picker_title_settings">Pick Your Location</string>
+    <string name="map_picker_title_favourite">Add Favourite Location</string>
     <string name="map_picker_back">Back</string>
+    <string name="map_picker_search_hint">Search for a city…</string>
+    <string name="map_picker_tap_hint">Tap anywhere on the map to place a pin</string>
+    <string name="map_picker_confirm">Confirm Location</string>
 </resources>

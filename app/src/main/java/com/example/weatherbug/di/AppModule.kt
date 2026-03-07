@@ -14,6 +14,7 @@ import com.example.weatherbug.presentation.favourites.viewmodel.FavouriteDetailV
 import com.example.weatherbug.presentation.favourites.viewmodel.FavouritesViewModel
 import com.example.weatherbug.presentation.home.viewmodel.HomeViewModel
 import com.example.weatherbug.presentation.location.LocationViewModel
+import com.example.weatherbug.presentation.map.viewmodel.MapPickerViewModel
 import com.example.weatherbug.presentation.settings.viewmodel.SettingsViewModel
 import com.example.weatherbug.presentation.splash.viewmodel.SplashViewModel
 import com.example.weatherbug.util.Constants
@@ -110,6 +111,13 @@ val repoModule = module {
         FavouriteDetailViewModel(
             lat = lat,
             lon = lon,
+            repo = get(),
+            dataStore = get()
+        )
+    }
+
+    viewModel {
+        MapPickerViewModel(
             repo = get(),
             dataStore = get()
         )
