@@ -35,22 +35,12 @@ fun NavGraph(
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
-                },
-                onNavigateToMapPicker = {
-                    AppLogger.logNavigation("NavGraph", "Splash → MapPicker")
-                    navController.navigate(Screen.MapPicker.route) {
-                        popUpTo(Screen.Splash.route) { inclusive = true }
-                    }
                 }
             )
         }
 
         composable(route = Screen.Home.route) {
             AppLogger.logNavigation("NavGraph", "Home")
-            val activity = LocalActivity.current as MainActivity
-            LaunchedEffect(Unit) {
-                activity.locationViewModel.checkAndRequestOnLaunch()
-            }
             HomeScreen()
         }
 

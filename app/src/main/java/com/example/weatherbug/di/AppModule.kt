@@ -172,7 +172,8 @@ val repoModule = module {
 
     viewModel {
         SplashViewModel(
-            dataStore = get(),
+            appDataStore = get(),
+            fusedClient  = get()
         )
     }
 
@@ -183,5 +184,5 @@ val repoModule = module {
         )
     }
 
-   
+
 }

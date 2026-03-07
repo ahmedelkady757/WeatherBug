@@ -1,5 +1,8 @@
 package com.example.weatherbug.presentation.splash.view
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -16,24 +19,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weatherbug.R
-import com.example.weatherbug.presentation.splash.viewmodel.SplashDestination
+import com.example.weatherbug.presentation.splash.viewmodel.SplashNavEvent
 import com.example.weatherbug.presentation.splash.viewmodel.SplashViewModel
-import com.example.weatherbug.presentation.splash.viewmodel.SplashViewModelFactory
 import kotlinx.coroutines.delay
+import org.koin.androidx.compose.koinViewModel
 
 private const val SPLASH_DURATION_MS    = 2000L
 private const val ANIM_ICON_DURATION_MS = 800
@@ -43,23 +46,42 @@ private const val ANIM_TEXT_DELAY_MS    = 300L
 
 @Composable
 fun SplashScreen(
-    onNavigateToHome:      () -> Unit,
-    onNavigateToMapPicker: () -> Unit
+    onNavigateToHome: () -> Unit
 ) {
-    val context = LocalContext.current
-
-    val viewModel: SplashViewModel = viewModel(
-        factory = SplashViewModelFactory(context)
-    )
-
-    val destination by viewModel.destination.collectAsStateWithLifecycle()
+    val viewModel: SplashViewModel = koinViewModel()
+    val navEvent by viewModel.navEvent.collectAsStateWithLifecycle()
 
 
-    LaunchedEffect(destination) {
-        when (destination) {
-            is SplashDestination.Idle              -> Unit
-            is SplashDestination.NavigateToHome    -> onNavigateToHome()
-            is SplashDestination.NavigateToMapPicker -> onNavigateToMapPicker()
+    var shouldLaunchPermission by remember { mutableStateOf(false) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        shouldLaunchPermission = false
+        val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+                || permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (granted) viewModel.onPermissionGranted()
+        else         viewModel.onPermissionDenied()
+    }
+
+
+    if (shouldLaunchPermission) {
+        LaunchedEffect(Unit) {
+            permissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
+    }
+
+
+    LaunchedEffect(navEvent) {
+        when (navEvent) {
+            is SplashNavEvent.Idle              -> Unit
+            is SplashNavEvent.RequestPermission -> shouldLaunchPermission = true
+            is SplashNavEvent.NavigateToHome    -> onNavigateToHome()
         }
     }
 
@@ -70,13 +92,9 @@ fun SplashScreen(
 
 
     LaunchedEffect(Unit) {
-
         iconScale.animateTo(
             targetValue   = 1f,
-            animationSpec = tween(
-                durationMillis = ANIM_ICON_DURATION_MS,
-                easing         = FastOutSlowInEasing
-            )
+            animationSpec = tween(durationMillis = ANIM_ICON_DURATION_MS, easing = FastOutSlowInEasing)
         )
         iconAlpha.animateTo(
             targetValue   = 1f,
@@ -84,7 +102,6 @@ fun SplashScreen(
         )
 
         delay(ANIM_TEXT_DELAY_MS)
-
         textAlpha.animateTo(
             targetValue   = 1f,
             animationSpec = tween(durationMillis = ANIM_TEXT_DURATION_MS)
@@ -94,7 +111,7 @@ fun SplashScreen(
         val remaining = SPLASH_DURATION_MS - elapsed
         if (remaining > 0L) delay(remaining)
 
-        viewModel.decideDestination()
+        viewModel.decideNavigation()
     }
 
 
@@ -106,7 +123,6 @@ fun SplashScreen(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-            // App logo
             Icon(
                 painter            = painterResource(R.drawable.ic_launcher_foreground),
                 contentDescription = null,
@@ -119,7 +135,6 @@ fun SplashScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // App name
             Text(
                 text       = stringResource(R.string.app_name),
                 style      = MaterialTheme.typography.displayLarge,
