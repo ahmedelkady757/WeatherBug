@@ -50,31 +50,31 @@ class LocationViewModel(
 
     fun checkAndRequestOnLaunch() {
         viewModelScope.launch {
-            val locationMode = dataStore.locationModeFlow.first()
-            val gpsEnabled   = dataStore.gpsEnabledFlow.first()
+            val isFirstLaunch = dataStore.isFirstLaunchFlow.first()
+            val locationMode  = dataStore.locationModeFlow.first()
 
             AppLogger.logVmEvent(
                 "LocationViewModel",
-                "checkAndRequestOnLaunch locationMode=$locationMode gpsEnabled=$gpsEnabled"
+                "checkAndRequestOnLaunch firstLaunch=$isFirstLaunch locationMode=$locationMode"
             )
 
-            when {
-                locationMode == Constants.LOCATION_MAP -> {
-                    AppLogger.logVmEvent("LocationViewModel", "map mode → emit saved coords")
-                    _locationState.value = LocationState.Success(
-                        lat = dataStore.savedLatFlow.first(),
-                        lon = dataStore.savedLonFlow.first()
-                    )
-                }
-                !gpsEnabled -> {
-                    AppLogger.logVmEvent("LocationViewModel", "gpsEnabled=false → request permission")
-                    _shouldRequestPermission.emit(true)
-                }
-                else -> {
-                    AppLogger.logVmEvent("LocationViewModel", "gpsEnabled=true → fetch location")
-                    fetchAndSaveLocation()
-                }
+            if (locationMode == Constants.LOCATION_MAP && !isFirstLaunch) {
+                val lat = dataStore.savedLatFlow.first()
+                val lon = dataStore.savedLonFlow.first()
+                AppLogger.logVmEvent(
+                    "LocationViewModel",
+                    "map mode → emit saved coords lat=$lat lon=$lon"
+                )
+                _locationState.value = LocationState.Success(lat, lon)
+                return@launch
             }
+
+            // GPS mode behaviour: always ask until user grants at OS level.
+            AppLogger.logVmEvent(
+                "LocationViewModel",
+                "GPS mode → request permission (firstLaunch=$isFirstLaunch)"
+            )
+            _shouldRequestPermission.emit(true)
         }
     }
 
@@ -84,6 +84,12 @@ class LocationViewModel(
             dataStore.saveGpsEnabled(true)
             _permissionState.value = PermissionState.Granted
             fetchAndSaveLocation()
+
+            val isFirstLaunch = dataStore.isFirstLaunchFlow.first()
+            if (isFirstLaunch) {
+                AppLogger.logVmEvent("LocationViewModel", "onPermissionGranted → mark first launch done")
+                dataStore.setFirstLaunchDone()
+            }
         }
     }
 
@@ -92,24 +98,36 @@ class LocationViewModel(
             AppLogger.logVmEvent("LocationViewModel", "onPermissionDenied()")
             dataStore.saveGpsEnabled(false)
             _permissionState.value = PermissionState.Denied
+            val isFirstLaunch = dataStore.isFirstLaunchFlow.first()
 
-            // fall back to whatever coords are already saved
-            val savedLat = dataStore.savedLatFlow.first()
-            val savedLon = dataStore.savedLonFlow.first()
-            AppLogger.logVmEvent("LocationViewModel", "denied → using lat=$savedLat lon=$savedLon")
-            _locationState.value = LocationState.Success(savedLat, savedLon)
+            if (isFirstLaunch) {
+                // First launch & permission denied → use fallback Cairo coords and persist them
+                val fallbackLat = Constants.FALLBACK_LAT
+                val fallbackLon = Constants.FALLBACK_LON
+                AppLogger.logVmEvent(
+                    "LocationViewModel",
+                    "first launch denied → fallback lat=$fallbackLat lon=$fallbackLon"
+                )
+                dataStore.saveLocation(fallbackLat, fallbackLon)
+                _locationState.value = LocationState.Success(fallbackLat, fallbackLon)
+                dataStore.setFirstLaunchDone()
+            } else {
+                // Not first launch → keep and reuse last stored values
+                val savedLat = dataStore.savedLatFlow.first()
+                val savedLon = dataStore.savedLonFlow.first()
+                AppLogger.logVmEvent(
+                    "LocationViewModel",
+                    "denied (not first launch) → using saved lat=$savedLat lon=$savedLon"
+                )
+                _locationState.value = LocationState.Success(savedLat, savedLon)
+            }
         }
     }
 
     fun refreshLocation() {
         viewModelScope.launch {
-            val gpsEnabled = dataStore.gpsEnabledFlow.first()
-            AppLogger.logVmEvent("LocationViewModel", "refreshLocation() gpsEnabled=$gpsEnabled")
-            if (!gpsEnabled) {
-                _shouldRequestPermission.emit(true)
-                return@launch
-            }
-            fetchAndSaveLocation()
+            AppLogger.logVmEvent("LocationViewModel", "refreshLocation() → request permission")
+            _shouldRequestPermission.emit(true)
         }
     }
 

@@ -12,6 +12,7 @@ import com.example.weatherbug.data.repo.WeatherRepo
 import com.example.weatherbug.data.repo.WeatherRepoImpl
 import com.example.weatherbug.presentation.home.viewmodel.HomeViewModel
 import com.example.weatherbug.presentation.location.LocationViewModel
+import com.example.weatherbug.presentation.settings.viewmodel.SettingsViewModel
 import com.example.weatherbug.presentation.splash.viewmodel.SplashViewModel
 import com.example.weatherbug.util.Constants
 import com.google.android.gms.location.LocationServices
@@ -92,5 +93,10 @@ val repoModule = module {
         )
     }
 
-
+    viewModel { (locationViewModel: LocationViewModel) ->
+        SettingsViewModel(
+            dataStore = get(),
+            locationViewModel = locationViewModel
+        )
+    }
 }
