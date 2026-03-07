@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherbug.data.datasource.local.AppDataStore
 import com.example.weatherbug.data.models.FavouriteWeatherItem
+import com.example.weatherbug.data.models.GeocodingItem
 import com.example.weatherbug.data.repo.WeatherRepo
 import com.example.weatherbug.navigation.Screen
 import com.example.weatherbug.util.AppLogger
+import com.example.weatherbug.util.Constants
 import com.example.weatherbug.util.ResponseState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,7 +17,10 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
@@ -41,12 +46,37 @@ class MapPickerViewModel(
     val isGeocodingName: StateFlow<Boolean> = _isGeocodingName.asStateFlow()
 
 
+    private val searchQueries = MutableSharedFlow<String>(extraBufferCapacity = 64)
+
+    private val _searchResults = MutableStateFlow<List<GeocodingItem>>(emptyList())
+    val searchResults: StateFlow<List<GeocodingItem>> = _searchResults.asStateFlow()
+
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching: StateFlow<Boolean> = _isSearching.asStateFlow()
+
+    private val _searchError = MutableStateFlow<String?>(null)
+    val searchError: StateFlow<String?> = _searchError.asStateFlow()
+
+
     private val _isConfirming = MutableStateFlow(false)
     val isConfirming: StateFlow<Boolean> = _isConfirming.asStateFlow()
 
 
     private val _events = MutableSharedFlow<MapPickerEvent>()
     val events: SharedFlow<MapPickerEvent> = _events.asSharedFlow()
+
+
+    init {
+        observeSearchQueries()
+    }
+
+
+    fun onSearchQueryChanged(query: String) {
+        viewModelScope.launch {
+            searchQueries.emit(query)
+        }
+    }
+
 
     fun onMapTapped(lat: Double, lon: Double) {
         AppLogger.logVmEvent("MapPickerViewModel", "onMapTapped lat=$lat lon=$lon")
@@ -161,5 +191,57 @@ class MapPickerViewModel(
             }
             _isGeocodingName.value = false
         }
+    }
+
+
+    private fun observeSearchQueries() {
+        viewModelScope.launch {
+            searchQueries
+                .debounce(400)
+                .map { it.trim() }
+                .distinctUntilChanged()
+                .collect { query ->
+                    performSearch(query)
+                }
+        }
+    }
+
+
+    private suspend fun performSearch(rawQuery: String) {
+        val query = rawQuery.trim()
+        if (query.length < 2) {
+            _searchResults.value = emptyList()
+            _searchError.value   = null
+            _isSearching.value   = false
+            return
+        }
+
+        AppLogger.logVmEvent("MapPickerViewModel", "performSearch query=$query")
+        _isSearching.value = true
+
+        when (val result = repo.getCoordinatesByCity(query, Constants.GEO_LIMIT)) {
+
+            is ResponseState.Success -> {
+                _searchResults.value = result.data
+                _searchError.value   = null
+                AppLogger.logVmEvent(
+                    "MapPickerViewModel",
+                    "search success: results=${result.data.size}"
+                )
+            }
+
+            is ResponseState.Failure -> {
+                _searchResults.value = emptyList()
+                _searchError.value   = result.errorMessage
+                AppLogger.logVmError(
+                    "MapPickerViewModel",
+                    "search failed: ${result.errorMessage}"
+                )
+            }
+
+            ResponseState.Loading -> Unit
+        }
+
+        _isSearching.value = false
     }
 }
