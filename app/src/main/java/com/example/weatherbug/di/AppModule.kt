@@ -105,4 +105,12 @@ val repoModule = module {
     viewModel {
         FavouritesViewModel(repo = get())
     }
+    viewModel { (lat: Double, lon: Double) ->
+        FavouriteDetailViewModel(
+            lat       = lat,
+            lon       = lon,
+            repo      = get(),
+            dataStore = get()
+        )
+    }
 }
