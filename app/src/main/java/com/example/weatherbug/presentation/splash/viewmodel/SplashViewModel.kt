@@ -1,10 +1,7 @@
 package com.example.weatherbug.presentation.splash.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.weatherbug.WeatherApplication
 import com.example.weatherbug.data.datasource.local.AppDataStore
 import com.example.weatherbug.util.AppLogger
 import com.example.weatherbug.util.Constants
@@ -14,54 +11,40 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+// ── Nav event ─────────────────────────────────────────────────────────────────
 
-sealed class SplashDestination {
-    data object Idle : SplashDestination()
-    data object NavigateToHome : SplashDestination()
-    data object NavigateToMapPicker : SplashDestination()
+sealed class SplashNavEvent {
+    data object Idle                : SplashNavEvent()
+    data object NavigateToHome      : SplashNavEvent()
+    data object NavigateToMapPicker : SplashNavEvent()
 }
+
 
 
 class SplashViewModel(
-    private val dataStore: AppDataStore
+    private val appDataStore: AppDataStore
 ) : ViewModel() {
 
-    private val _destination = MutableStateFlow<SplashDestination>(SplashDestination.Idle)
-    val destination: StateFlow<SplashDestination> = _destination.asStateFlow()
+    private val _navEvent = MutableStateFlow<SplashNavEvent>(SplashNavEvent.Idle)
+    val navEvent: StateFlow<SplashNavEvent> = _navEvent.asStateFlow()
 
-
-    fun decideDestination() {
+    fun decideNavigation() {
         viewModelScope.launch {
-            AppLogger.logVmEvent("SplashViewModel", "decideDestination()")
+            AppLogger.logVmEvent("SplashViewModel", "decideNavigation()")
 
-            val locationMode = dataStore.locationModeFlow.first()
+            val locationMode = appDataStore.locationModeFlow.first()
             AppLogger.logVmEvent("SplashViewModel", "locationMode=$locationMode")
 
-            _destination.value = when (locationMode) {
+            _navEvent.value = when (locationMode) {
                 Constants.LOCATION_MAP -> {
                     AppLogger.logVmEvent("SplashViewModel", "→ NavigateToMapPicker")
-                    SplashDestination.NavigateToMapPicker
+                    SplashNavEvent.NavigateToHome
                 }
                 else -> {
                     AppLogger.logVmEvent("SplashViewModel", "→ NavigateToHome")
-                    SplashDestination.NavigateToHome
+                    SplashNavEvent.NavigateToHome
                 }
             }
         }
-    }
-}
-
-
-class SplashViewModelFactory(
-    private val context: Context
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SplashViewModel::class.java)) {
-            val app = context.applicationContext as WeatherApplication
-            return SplashViewModel(dataStore = app.dataStore) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
     }
 }

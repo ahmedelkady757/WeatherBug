@@ -1,15 +1,11 @@
 package com.example.weatherbug.navigation
 
-
-import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
-import com.example.weatherbug.MainActivity
 import com.example.weatherbug.presentation.home.view.HomeScreen
 import com.example.weatherbug.presentation.splash.view.SplashScreen
 import com.example.weatherbug.util.AppLogger
@@ -17,8 +13,8 @@ import com.example.weatherbug.util.AppLogger
 
 @Composable
 fun NavGraph(
-    navController: NavHostController,
-    modifier: Modifier = Modifier
+    navController:     NavHostController,
+    modifier:          Modifier = Modifier
 ) {
     NavHost(
         navController    = navController,
@@ -26,7 +22,6 @@ fun NavGraph(
         modifier         = modifier
     ) {
 
-        // ── Splash ───────────────────────────────────────────────────────────
         composable(route = Screen.Splash.route) {
             AppLogger.logNavigation("NavGraph", "Splash")
             SplashScreen(
@@ -47,13 +42,8 @@ fun NavGraph(
 
         composable(route = Screen.Home.route) {
             AppLogger.logNavigation("NavGraph", "Home")
-            val activity = LocalActivity.current as MainActivity
-            LaunchedEffect(Unit) {
-                activity.locationViewModel.checkAndRequestOnLaunch()
-            }
             HomeScreen()
         }
-
 
         composable(route = Screen.Favourites.route) {
             AppLogger.logNavigation("NavGraph", "Favourites")

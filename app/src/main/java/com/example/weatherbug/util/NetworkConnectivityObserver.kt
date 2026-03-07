@@ -61,7 +61,6 @@ class NetworkConnectivityObserver(context: Context) {
 
         connectivityManager.registerNetworkCallback(request, callback)
 
-        // unregister when the flow is cancelled (screen leaves composition)
         awaitClose {
             AppLogger.d("NetworkConnectivityObserver: unregistering network callback")
             connectivityManager.unregisterNetworkCallback(callback)

@@ -22,5 +22,6 @@
     <string name="home_hourly_forecast">التوقعات بالساعة</string>
     <string name="home_daily_forecast">توقعات 7 أيام</string>
     <string name="home_retry">إعادة المحاولة</string>
-
+    <string name="home_am">ص</string>
+    <string name="home_pm">م</string>
 </resources>

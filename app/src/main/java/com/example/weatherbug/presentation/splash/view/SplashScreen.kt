@@ -22,18 +22,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weatherbug.R
-import com.example.weatherbug.presentation.splash.viewmodel.SplashDestination
+import com.example.weatherbug.presentation.splash.viewmodel.SplashNavEvent
 import com.example.weatherbug.presentation.splash.viewmodel.SplashViewModel
-import com.example.weatherbug.presentation.splash.viewmodel.SplashViewModelFactory
 import kotlinx.coroutines.delay
+import org.koin.androidx.compose.koinViewModel
 
 private const val SPLASH_DURATION_MS    = 2000L
 private const val ANIM_ICON_DURATION_MS = 800
@@ -46,20 +44,15 @@ fun SplashScreen(
     onNavigateToHome:      () -> Unit,
     onNavigateToMapPicker: () -> Unit
 ) {
-    val context = LocalContext.current
-
-    val viewModel: SplashViewModel = viewModel(
-        factory = SplashViewModelFactory(context)
-    )
-
-    val destination by viewModel.destination.collectAsStateWithLifecycle()
+    val viewModel: SplashViewModel = koinViewModel()
+    val navEvent by viewModel.navEvent.collectAsStateWithLifecycle()
 
 
-    LaunchedEffect(destination) {
-        when (destination) {
-            is SplashDestination.Idle              -> Unit
-            is SplashDestination.NavigateToHome    -> onNavigateToHome()
-            is SplashDestination.NavigateToMapPicker -> onNavigateToMapPicker()
+    LaunchedEffect(navEvent) {
+        when (navEvent) {
+            is SplashNavEvent.Idle                -> Unit
+            is SplashNavEvent.NavigateToHome      -> onNavigateToHome()
+            is SplashNavEvent.NavigateToMapPicker -> onNavigateToMapPicker()
         }
     }
 
@@ -70,13 +63,9 @@ fun SplashScreen(
 
 
     LaunchedEffect(Unit) {
-
         iconScale.animateTo(
             targetValue   = 1f,
-            animationSpec = tween(
-                durationMillis = ANIM_ICON_DURATION_MS,
-                easing         = FastOutSlowInEasing
-            )
+            animationSpec = tween(durationMillis = ANIM_ICON_DURATION_MS, easing = FastOutSlowInEasing)
         )
         iconAlpha.animateTo(
             targetValue   = 1f,
@@ -84,7 +73,6 @@ fun SplashScreen(
         )
 
         delay(ANIM_TEXT_DELAY_MS)
-
         textAlpha.animateTo(
             targetValue   = 1f,
             animationSpec = tween(durationMillis = ANIM_TEXT_DURATION_MS)
@@ -94,7 +82,7 @@ fun SplashScreen(
         val remaining = SPLASH_DURATION_MS - elapsed
         if (remaining > 0L) delay(remaining)
 
-        viewModel.decideDestination()
+        viewModel.decideNavigation()
     }
 
 
@@ -106,7 +94,6 @@ fun SplashScreen(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-            // App logo
             Icon(
                 painter            = painterResource(R.drawable.ic_launcher_foreground),
                 contentDescription = null,
@@ -119,7 +106,6 @@ fun SplashScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // App name
             Text(
                 text       = stringResource(R.string.app_name),
                 style      = MaterialTheme.typography.displayLarge,
