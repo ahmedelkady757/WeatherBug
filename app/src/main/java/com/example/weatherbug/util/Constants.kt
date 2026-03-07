@@ -8,7 +8,7 @@ object Constants {
     const val BASE_URL_PRO     = "https://pro.openweathermap.org/"
 
     const val DATASTORE_NAME   = "weather_bug_prefs"
-
+    const val DB_NAME          = "weather_bug_db"
     const val KEY_THEME           = "theme"
     const val KEY_LANGUAGE        = "language"
     const val KEY_TEMP_UNIT       = "temp_unit"
