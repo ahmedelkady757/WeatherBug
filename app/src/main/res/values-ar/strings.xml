@@ -44,4 +44,17 @@
     <string name="location_permission_settings_message">تم رفض صلاحية الموقع بشكل دائم. من فضلك فعّلها من إعدادات التطبيق.</string>
     <string name="location_permission_open_settings">فتح الإعدادات</string>
 
+    <string name="favourites_empty_title">لا توجد مفضلات بعد</string>
+    <string name="favourites_empty_subtitle">اضغط + لإضافة موقعك المفضل الأول</string>
+    <string name="favourites_add">إضافة مفضلة</string>
+    <string name="favourites_delete_item">حذف المفضلة</string>
+    <string name="favourites_delete_one_title">إزالة المفضلة؟</string>
+    <string name="favourites_delete_one_body">إزالة %1$s من مفضلاتك؟</string>
+    <string name="favourites_delete_confirm">حذف</string>
+    <string name="favourites_delete_cancel">إلغاء</string>
+    <string name="favourites_delete_all_title">حذف جميع المفضلات</string>
+    <string name="favourites_delete_all_body">سيؤدي هذا إلى إزالة جميع مواقعك المحفوظة. لا يمكن التراجع عن هذا الإجراء.</string>
+    <string name="favourites_delete_all_confirm">حذف الكل</string>
+    <string name="favourites_delete_all_cancel">إلغاء</string>
+
 </resources>
