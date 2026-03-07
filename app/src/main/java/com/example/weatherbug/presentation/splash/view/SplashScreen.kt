@@ -1,8 +1,5 @@
 package com.example.weatherbug.presentation.splash.view
 
-import android.Manifest
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -19,9 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -46,42 +41,18 @@ private const val ANIM_TEXT_DELAY_MS    = 300L
 
 @Composable
 fun SplashScreen(
-    onNavigateToHome: () -> Unit
+    onNavigateToHome:      () -> Unit,
+    onNavigateToMapPicker: () -> Unit
 ) {
     val viewModel: SplashViewModel = koinViewModel()
     val navEvent by viewModel.navEvent.collectAsStateWithLifecycle()
 
 
-    var shouldLaunchPermission by remember { mutableStateOf(false) }
-
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        shouldLaunchPermission = false
-        val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
-                || permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-        if (granted) viewModel.onPermissionGranted()
-        else         viewModel.onPermissionDenied()
-    }
-
-
-    if (shouldLaunchPermission) {
-        LaunchedEffect(Unit) {
-            permissionLauncher.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-            )
-        }
-    }
-
-
     LaunchedEffect(navEvent) {
         when (navEvent) {
-            is SplashNavEvent.Idle              -> Unit
-            is SplashNavEvent.RequestPermission -> shouldLaunchPermission = true
-            is SplashNavEvent.NavigateToHome    -> onNavigateToHome()
+            is SplashNavEvent.Idle                -> Unit
+            is SplashNavEvent.NavigateToHome      -> onNavigateToHome()
+            is SplashNavEvent.NavigateToMapPicker -> onNavigateToMapPicker()
         }
     }
 

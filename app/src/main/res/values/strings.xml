@@ -22,5 +22,6 @@
     <string name="home_hourly_forecast">Hourly Forecast</string>
     <string name="home_daily_forecast">7-Day Forecast</string>
     <string name="home_retry">Retry</string>
-
+    <string name="home_am">AM</string>
+    <string name="home_pm">PM</string>
 </resources>

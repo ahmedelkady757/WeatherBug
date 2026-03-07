@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -34,15 +33,14 @@ import androidx.navigation.compose.rememberNavController
 import com.example.weatherbug.navigation.NavGraph
 import com.example.weatherbug.navigation.Screen
 import com.example.weatherbug.presentation.location.LocationViewModel
-import com.example.weatherbug.presentation.location.LocationViewModelFactory
 import com.example.weatherbug.ui.theme.WeatherBugTheme
 import com.example.weatherbug.util.AppLogger
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainActivity : ComponentActivity() {
 
-    val locationViewModel: LocationViewModel by viewModels {
-        LocationViewModelFactory(this)
-    }
+
+    val locationViewModel: LocationViewModel by viewModel()
 
 
     private val locationPermissionLauncher = registerForActivityResult(
@@ -60,14 +58,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         AppLogger.logVmEvent("MainActivity", "onCreate")
+
         observePermissionRequests()
+        locationViewModel.checkAndRequestOnLaunch()
         setContent {
             WeatherBugTheme {
                 val navController = rememberNavController()
-                WeatherBugApp(navController = navController)
+                WeatherBugApp(
+                    navController     = navController,
+                    locationViewModel = locationViewModel
+                )
             }
         }
     }
+
+
     private fun observePermissionRequests() {
         lifecycleScope.launch {
             locationViewModel.shouldRequestPermission.collect { should ->
@@ -87,8 +92,10 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun WeatherBugApp(navController: NavHostController) {
-
+fun WeatherBugApp(
+    navController:     NavHostController,
+    locationViewModel: LocationViewModel
+) {
     val bottomNavScreens = listOf(
         Screen.Home.route,
         Screen.Favourites.route,
@@ -98,8 +105,7 @@ fun WeatherBugApp(navController: NavHostController) {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute      = navBackStackEntry?.destination?.route
-
-    val showBottomNav = currentRoute in bottomNavScreens
+    val showBottomNav     = currentRoute in bottomNavScreens
 
     Scaffold(
         bottomBar = {
@@ -112,12 +118,11 @@ fun WeatherBugApp(navController: NavHostController) {
         }
     ) { innerPadding ->
         NavGraph(
-            navController = navController,
-            modifier      = Modifier.padding(innerPadding)
+            navController     = navController,
+            modifier          = Modifier.padding(innerPadding)
         )
     }
 }
-
 
 
 data class BottomNavItem(
@@ -168,9 +173,7 @@ fun WeatherBugBottomNav(
                     if (!isSelected) {
                         AppLogger.logNavigation("BottomNav", item.route)
                         navController.navigate(item.route) {
-                            popUpTo(Screen.Home.route) {
-                                saveState = true
-                            }
+                            popUpTo(Screen.Home.route) { saveState = true }
                             launchSingleTop = true
                             restoreState    = true
                         }
@@ -183,9 +186,7 @@ fun WeatherBugBottomNav(
                         contentDescription = stringResource(item.labelRes)
                     )
                 },
-                label = {
-                    Text(text = stringResource(item.labelRes))
-                }
+                label = { Text(text = stringResource(item.labelRes)) }
             )
         }
     }
