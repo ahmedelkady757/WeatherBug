@@ -58,5 +58,11 @@
     <string name="favourites_delete_all_cancel">إلغاء</string>
 
 
+    <string name="map_picker_title_settings">اختر موقعك</string>
+    <string name="map_picker_title_favourite">إضافة موقع مفضل</string>
     <string name="map_picker_back">رجوع</string>
+    <string name="map_picker_search_hint">ابحث عن مدينة…</string>
+    <string name="map_picker_tap_hint">اضغط في أي مكان على الخريطة لوضع دبوس</string>
+    <string name="map_picker_confirm">تأكيد الموقع</string>
+
 </resources>
