@@ -99,8 +99,8 @@ val repoModule = module {
 
     viewModel { (locationViewModel: LocationViewModel) ->
         SettingsViewModel(
-            dataStore = get(),
-            locationViewModel = locationViewModel
+            dataStore    = get(),
+            onRefreshGps = locationViewModel::refreshLocation
         )
     }
 
