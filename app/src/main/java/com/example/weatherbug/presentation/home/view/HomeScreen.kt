@@ -132,7 +132,7 @@ fun WeatherContent(
         }
 
         when (val state = hourlyState) {
-            is ResponseState.Loading -> LoadingCard(modifier = Modifier.height(120.dp))
+            is ResponseState.Loading -> LoadingCard(modifier = Modifier.height(160.dp))
             is ResponseState.Failure -> Unit
             is ResponseState.Success -> HourlyForecastRow(items = state.data.list.take(24))
         }
@@ -402,26 +402,29 @@ private fun HourlyItem(item: HourlyForecastResponse.HourlyItem) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier            = Modifier
-            .clip(RoundedCornerShape(12.dp))
+            .width(90.dp)
+            .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant)
-            .padding(horizontal = 12.dp, vertical = 10.dp)
+            .padding(horizontal = 14.dp, vertical = 18.dp)
     ) {
         Text(
-            text  = timeLabel,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            text      = timeLabel,
+            style     = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Medium,
+            color     = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Image(
             painter            = painterResource(WeatherIconMapper.getIcon(iconCode)),
             contentDescription = null,
-            modifier           = Modifier.size(36.dp)
+            modifier           = Modifier.size(56.dp)
         )
         Text(
             text       = "${item.main.temp.roundToInt()}°",
-            style      = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold
+            style      = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color      = MaterialTheme.colorScheme.onSurface
         )
     }
 }
