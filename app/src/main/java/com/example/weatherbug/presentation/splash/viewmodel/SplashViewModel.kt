@@ -11,12 +11,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-// ── Nav event ─────────────────────────────────────────────────────────────────
 
 sealed class SplashNavEvent {
     data object Idle                : SplashNavEvent()
     data object NavigateToHome      : SplashNavEvent()
-    data object NavigateToMapPicker : SplashNavEvent()
 }
 
 
@@ -28,23 +26,5 @@ class SplashViewModel(
     private val _navEvent = MutableStateFlow<SplashNavEvent>(SplashNavEvent.Idle)
     val navEvent: StateFlow<SplashNavEvent> = _navEvent.asStateFlow()
 
-    fun decideNavigation() {
-        viewModelScope.launch {
-            AppLogger.logVmEvent("SplashViewModel", "decideNavigation()")
 
-            val locationMode = appDataStore.locationModeFlow.first()
-            AppLogger.logVmEvent("SplashViewModel", "locationMode=$locationMode")
-
-            _navEvent.value = when (locationMode) {
-                Constants.LOCATION_MAP -> {
-                    AppLogger.logVmEvent("SplashViewModel", "→ NavigateToMapPicker")
-                    SplashNavEvent.NavigateToHome
-                }
-                else -> {
-                    AppLogger.logVmEvent("SplashViewModel", "→ NavigateToHome")
-                    SplashNavEvent.NavigateToHome
-                }
-            }
-        }
-    }
 }

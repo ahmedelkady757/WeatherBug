@@ -31,7 +31,8 @@ class FavouriteDetailViewModel(
 ) : ViewModel() {
 
 
-    val appLanguage: StateFlow<String> = dataStore.languageFlow
+    // Effective language: resolves "device" → real locale code.
+    val appLanguage: StateFlow<String> = dataStore.effectiveLangFlow
         .stateIn(viewModelScope, SharingStarted.Eagerly, Constants.LANG_ENGLISH)
 
     val tempUnit: StateFlow<String> = dataStore.tempUnitFlow
@@ -57,7 +58,7 @@ class FavouriteDetailViewModel(
 
         viewModelScope.launch {
             dataStore.tempUnitFlow
-                .combine(dataStore.languageFlow) { unit, lang -> unit to lang }
+                .combine(dataStore.effectiveLangFlow) { unit, lang -> unit to lang }
                 .distinctUntilChanged()
                 .drop(1)
                 .collect {
@@ -77,7 +78,7 @@ class FavouriteDetailViewModel(
     private fun loadWeather() {
         viewModelScope.launch {
             val units = dataStore.tempUnitFlow.first()
-            val lang  = dataStore.languageFlow.first()
+            val lang  = dataStore.effectiveLangFlow.first()  // resolved lang, never "device"
 
             AppLogger.logVmEvent(
                 "FavouriteDetailViewModel",

@@ -91,7 +91,7 @@ fun FavouriteDetailScreen(
                 hourlyState         = hourlyState,
                 dailyState          = dailyState,
                 appLanguage         = appLanguage,
-                windUnitLabel       = windUnitLabel,
+                windUnit            = windUnitLabel,
                 onRetry             = { viewModel.retry() }
             )
         }

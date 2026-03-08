@@ -52,7 +52,6 @@ private const val EXIT_FADE_MS            = 400
 @Composable
 fun SplashScreen(
     onNavigateToHome:      () -> Unit,
-    onNavigateToMapPicker: () -> Unit
 ) {
     val viewModel: SplashViewModel = koinViewModel()
     val navEvent by viewModel.navEvent.collectAsStateWithLifecycle()
@@ -61,7 +60,6 @@ fun SplashScreen(
         when (navEvent) {
             is SplashNavEvent.Idle                -> Unit
             is SplashNavEvent.NavigateToHome      -> onNavigateToHome()
-            is SplashNavEvent.NavigateToMapPicker -> onNavigateToMapPicker()
         }
     }
 
@@ -132,7 +130,8 @@ fun SplashScreen(
             targetValue   = 0f,
             animationSpec = tween(durationMillis = EXIT_FADE_MS, easing = FastOutSlowInEasing)
         )
-        viewModel.decideNavigation()
+        onNavigateToHome()
+
     }
 
     val primary = MaterialTheme.colorScheme.primary

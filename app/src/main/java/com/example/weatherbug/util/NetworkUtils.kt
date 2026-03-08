@@ -1,9 +1,5 @@
 package com.example.weatherbug.util
 
-/**
- * Returns true if the error message indicates a network/connectivity failure
- * (no internet, DNS failure, timeout, etc.).
- */
 fun isNoInternetError(message: String?): Boolean {
     if (message.isNullOrBlank()) return false
     val lower = message.lowercase()

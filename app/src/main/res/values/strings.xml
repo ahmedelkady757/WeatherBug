@@ -30,6 +30,7 @@
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_language">Language</string>
+    <string name="settings_lang_device">Device</string>
     <string name="settings_lang_english">English</string>
     <string name="settings_lang_arabic">Arabic</string>
     <string name="settings_temp_unit">Temperature Unit</string>
@@ -39,6 +40,10 @@
     <string name="settings_location_mode">Location Mode</string>
     <string name="settings_location_gps">GPS</string>
     <string name="settings_location_map">Map</string>
+    <string name="settings_wind_unit">Wind Speed Unit</string>
+    <string name="settings_wind_ms">m/s</string>
+    <string name="settings_wind_mph">mph</string>
+    <string name="settings_wind_kmh">km/h</string>
 
     <string name="location_permission_title">Location permission required</string>
     <string name="location_permission_settings_message">Location access is permanently denied. Please enable it from app settings.</string>
