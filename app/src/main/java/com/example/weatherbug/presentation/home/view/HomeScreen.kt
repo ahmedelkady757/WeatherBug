@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -56,6 +57,8 @@ import com.example.weatherbug.presentation.home.viewmodel.HomeViewModel
 import com.example.weatherbug.presentation.location.LocationViewModel
 import com.example.weatherbug.util.Constants
 import com.example.weatherbug.util.DateFormatter
+import com.example.weatherbug.util.isNoInternetError
+import com.example.weatherbug.util.NoInternetScreen
 import com.example.weatherbug.util.ResponseState
 import com.example.weatherbug.util.WeatherIconMapper
 import kotlinx.coroutines.delay
@@ -104,6 +107,14 @@ fun WeatherContent(
     onRetry:             () -> Unit,
     modifier:            Modifier = Modifier
 ) {
+    when (val state = currentWeatherState) {
+        is ResponseState.Failure -> if (isNoInternetError(state.errorMessage)) {
+            NoInternetScreen(modifier = modifier.fillMaxSize(), onRetry = onRetry)
+            return
+        }
+        else -> Unit
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -249,6 +260,8 @@ private fun CurrentWeatherCard(
     }
 }
 
+private const val STAT_CARD_HEIGHT_DP = 100
+
 @Composable
 private fun StatsRow(
     data:          WeatherResponse,
@@ -256,16 +269,17 @@ private fun StatsRow(
 ) {
     Row(
         modifier              = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment     = Alignment.Top
     ) {
         StatCard(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).height(STAT_CARD_HEIGHT_DP.dp),
             icon     = R.drawable.ic_stat_humidity,
             label    = stringResource(R.string.home_humidity),
             value    = "${data.main.humidity}%"
         )
         StatCard(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).height(STAT_CARD_HEIGHT_DP.dp),
             icon     = R.drawable.ic_stat_wind,
             label    = stringResource(R.string.home_wind),
             value    = "${data.wind.speed} $windUnitLabel"
@@ -273,13 +287,13 @@ private fun StatsRow(
         data.main.pressure.let {
             when {
                 it < 1030 -> StatCard(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).height(STAT_CARD_HEIGHT_DP.dp),
                     icon     = R.drawable.ic_stat_pressure_low,
                     label    = stringResource(R.string.home_pressure),
                     value    = "${data.main.pressure} hPa"
                 )
                 else -> StatCard(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).height(STAT_CARD_HEIGHT_DP.dp),
                     icon     = R.drawable.ic_stat_pressure_high,
                     label    = stringResource(R.string.home_pressure),
                     value    = "${data.main.pressure} hPa"
@@ -287,7 +301,7 @@ private fun StatsRow(
             }
         }
         StatCard(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).height(STAT_CARD_HEIGHT_DP.dp),
             icon     = R.drawable.ic_stat_clouds,
             label    = stringResource(R.string.home_clouds),
             value    = "${data.clouds.all}%"
@@ -303,7 +317,7 @@ private fun StatCard(
     value:    String
 ) {
     Card(
-        modifier  = modifier,
+        modifier  = modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors    = CardDefaults.cardColors(
@@ -313,26 +327,34 @@ private fun StatCard(
         Column(
             modifier            = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .fillMaxHeight()
+                .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.Center
         ) {
-            Image(
-                painter            = painterResource(icon),
-                contentDescription = label,
-                modifier           = Modifier.size(32.dp)
-            )
-            Text(
-                text       = value,
-                style      = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color      = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text  = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Image(
+                    painter            = painterResource(icon),
+                    contentDescription = label,
+                    modifier           = Modifier.size(32.dp)
+                )
+                Text(
+                    text       = value,
+                    style      = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color      = MaterialTheme.colorScheme.onSurface,
+                    maxLines   = 1
+                )
+                Text(
+                    text     = label,
+                    style    = MaterialTheme.typography.labelSmall,
+                    color    = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
+                )
+            }
         }
     }
 }
