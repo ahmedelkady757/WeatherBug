@@ -30,6 +30,7 @@
     <string name="settings_theme_light">فاتح</string>
     <string name="settings_theme_dark">داكن</string>
     <string name="settings_language">اللغة</string>
+    <string name="settings_lang_device">جهازي</string>
     <string name="settings_lang_english">الإنجليزية</string>
     <string name="settings_lang_arabic">العربية</string>
     <string name="settings_temp_unit">وحدة الحرارة</string>
@@ -39,6 +40,10 @@
     <string name="settings_location_mode">مصدر الموقع</string>
     <string name="settings_location_gps">نظام تحديد الموقع</string>
     <string name="settings_location_map">الخريطة</string>
+    <string name="settings_wind_unit">وحدة سرعة الرياح</string>
+    <string name="settings_wind_ms">م/ث</string>
+    <string name="settings_wind_mph">ميل/س</string>
+    <string name="settings_wind_kmh">كم/س</string>
 
     <string name="location_permission_title">صلاحية الموقع مطلوبة</string>
     <string name="location_permission_settings_message">تم رفض صلاحية الموقع بشكل دائم. من فضلك فعّلها من إعدادات التطبيق.</string>

@@ -1,6 +1,7 @@
 package com.example.weatherbug
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
@@ -73,6 +74,7 @@ class MainActivity : ComponentActivity() {
     }
 
 
+    @SuppressLint("LocalContextConfigurationRead")
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -101,18 +103,21 @@ class MainActivity : ComponentActivity() {
             val appLang    by dataStore.languageFlow.collectAsState(initial = Constants.LANG_ENGLISH)
 
             val baseContext = LocalContext.current
-            val locale      = if (appLang == Constants.LANG_ARABIC) Locale("ar") else Locale.ENGLISH
+
+            val locale = when (appLang) {
+                Constants.LANG_ARABIC -> Locale("ar")
+                Constants.LANG_DEVICE -> baseContext.resources.configuration.locales[0]
+                else                  -> Locale.ENGLISH
+            }
+
             val localizedContext = run {
                 val config = Configuration(baseContext.resources.configuration)
                 config.setLocale(locale)
                 baseContext.createConfigurationContext(config)
             }
 
-            val layoutDirection = if (appLang == Constants.LANG_ARABIC) {
-                LayoutDirection.Rtl
-            } else {
-                LayoutDirection.Ltr
-            }
+            val isArabic = locale.language == "ar"
+            val layoutDirection = if (isArabic) LayoutDirection.Rtl else LayoutDirection.Ltr
 
             CompositionLocalProvider(
                 LocalLayoutDirection provides layoutDirection,
@@ -153,10 +158,8 @@ class MainActivity : ComponentActivity() {
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)
 
         if (showRationaleFine || showRationaleCoarse) {
-            // User just denied without "Don't ask again" → let ViewModel handle fallback logic
             locationViewModel.onPermissionDenied()
         } else {
-            // "Don't ask again" or permanently denied → show dialog that leads to app settings
             AlertDialog.Builder(this)
                 .setTitle(R.string.location_permission_title)
                 .setMessage(R.string.location_permission_settings_message)

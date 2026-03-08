@@ -48,6 +48,7 @@ fun SettingsScreen(
     val theme        by viewModel.theme.collectAsStateWithLifecycle()
     val language     by viewModel.language.collectAsStateWithLifecycle()
     val tempUnit     by viewModel.tempUnit.collectAsStateWithLifecycle()
+    val windUnit     by viewModel.windUnit.collectAsStateWithLifecycle()
     val locationMode by viewModel.locationMode.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
@@ -89,6 +90,7 @@ fun SettingsScreen(
         SettingsCard(title = stringResource(R.string.settings_language)) {
             SegmentedRow(
                 options = listOf(
+                    Constants.LANG_DEVICE  to stringResource(R.string.settings_lang_device),
                     Constants.LANG_ENGLISH to stringResource(R.string.settings_lang_english),
                     Constants.LANG_ARABIC  to stringResource(R.string.settings_lang_arabic)
                 ),
@@ -106,6 +108,18 @@ fun SettingsScreen(
                 ),
                 selected = tempUnit,
                 onSelect = viewModel::setTempUnit
+            )
+        }
+
+        SettingsCard(title = stringResource(R.string.settings_wind_unit)) {
+            SegmentedRow(
+                options = listOf(
+                    Constants.WIND_UNIT_MS  to stringResource(R.string.settings_wind_ms),
+                    Constants.WIND_UNIT_MPH to stringResource(R.string.settings_wind_mph),
+                    Constants.WIND_UNIT_KMH to stringResource(R.string.settings_wind_kmh)
+                ),
+                selected = windUnit,
+                onSelect = viewModel::setWindUnit
             )
         }
 

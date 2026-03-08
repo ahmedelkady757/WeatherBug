@@ -137,7 +137,7 @@ class MapPickerViewModel(
 
     private suspend fun confirmFavourite(latLng: LatLng) {
         val units = dataStore.tempUnitFlow.first()
-        val lang  = dataStore.languageFlow.first()
+        val lang  = dataStore.effectiveLangFlow.first()  // resolved lang, never "device"
 
         when (val result = repo.getCurrentWeather(latLng.latitude, latLng.longitude, units, lang)) {
 
@@ -181,7 +181,7 @@ class MapPickerViewModel(
             _isGeocodingName.value = true
             when (val result = repo.getCityByCoordinates(lat, lon)) {
                 is ResponseState.Success -> {
-                    val lang  = dataStore.languageFlow.first()
+                    val lang  = dataStore.effectiveLangFlow.first()  // resolved lang
                     val first = result.data.firstOrNull()
                     val name  = first?.localizedName(lang) ?: first?.name.orEmpty()
                     AppLogger.logVmEvent("MapPickerViewModel", "geocoded city: $name")
@@ -235,7 +235,7 @@ class MapPickerViewModel(
         when (val result = repo.getCoordinatesByCity(effectiveQuery, Constants.GEO_LIMIT)) {
 
             is ResponseState.Success -> {
-                val lang          = dataStore.languageFlow.first()
+                val lang          = dataStore.effectiveLangFlow.first()  // resolved lang
                 val normalizedQ   = query.lowercase()
                 val prioritized   = result.data.sortedWith(
                     compareByDescending<GeocodingItem> { item ->

@@ -28,7 +28,7 @@ class HomeViewModel(
     private val dataStore: AppDataStore
 ) : ViewModel() {
 
-    val appLanguage: StateFlow<String> = dataStore.languageFlow
+    val appLanguage: StateFlow<String> = dataStore.effectiveLangFlow
         .stateIn(
             scope        = viewModelScope,
             started      = SharingStarted.Eagerly,
@@ -42,7 +42,13 @@ class HomeViewModel(
             initialValue = Constants.UNIT_METRIC
         )
 
-
+    val windUnit: StateFlow<String> = dataStore.windUnitFlow
+        .stateIn(
+            scope        = viewModelScope,
+            started      = SharingStarted.Eagerly,
+            initialValue = Constants.WIND_UNIT_MS
+        )
+    
     private val _currentWeatherState =
         MutableStateFlow<ResponseState<WeatherResponse>>(ResponseState.Loading)
     val currentWeatherState: StateFlow<ResponseState<WeatherResponse>> =
@@ -65,7 +71,7 @@ class HomeViewModel(
                 dataStore.savedLatFlow,
                 dataStore.savedLonFlow,
                 dataStore.tempUnitFlow,
-                dataStore.languageFlow
+                dataStore.effectiveLangFlow
             ) { lat, lon, units, lang ->
                 Quadruple(lat, lon, units, lang)
             }
@@ -121,7 +127,7 @@ class HomeViewModel(
             val lat   = dataStore.savedLatFlow.first()
             val lon   = dataStore.savedLonFlow.first()
             val units = dataStore.tempUnitFlow.first()
-            val lang  = dataStore.languageFlow.first()
+            val lang  = dataStore.effectiveLangFlow.first()  // resolved lang
             AppLogger.logVmEvent(
                 "HomeViewModel",
                 "retry lat=$lat lon=$lon units=$units lang=$lang"

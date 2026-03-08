@@ -36,6 +36,9 @@ class SettingsViewModel(
     val tempUnit: StateFlow<String> = dataStore.tempUnitFlow
         .stateIn(viewModelScope, SharingStarted.Eagerly, Constants.UNIT_METRIC)
 
+    val windUnit: StateFlow<String> = dataStore.windUnitFlow
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Constants.WIND_UNIT_MS)
+
     val locationMode: StateFlow<String> = dataStore.locationModeFlow
         .stateIn(viewModelScope, SharingStarted.Eagerly, Constants.LOCATION_GPS)
 
@@ -62,6 +65,13 @@ class SettingsViewModel(
         viewModelScope.launch {
             AppLogger.logVmEvent("SettingsViewModel", "setTempUnit → $unit")
             dataStore.saveTempUnit(unit)
+        }
+    }
+
+    fun setWindUnit(unit: String) {
+        viewModelScope.launch {
+            AppLogger.logVmEvent("SettingsViewModel", "setWindUnit → $unit")
+            dataStore.saveWindUnit(unit)
         }
     }
 

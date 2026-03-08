@@ -32,11 +32,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,9 +57,7 @@ import com.example.weatherbug.util.isNoInternetError
 import com.example.weatherbug.util.NoInternetScreen
 import com.example.weatherbug.util.ResponseState
 import com.example.weatherbug.util.WeatherIconMapper
-import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
-import java.util.Locale
 import kotlin.math.roundToInt
 
 
@@ -78,20 +72,14 @@ fun HomeScreen(
     val dailyState     by viewModel.dailyState.collectAsStateWithLifecycle()
     val appLang        by viewModel.appLanguage.collectAsStateWithLifecycle()
     val tempUnit       by viewModel.tempUnit.collectAsStateWithLifecycle()
-    val windUnitLabel  = if (tempUnit == Constants.UNIT_IMPERIAL) {
-        Constants.WIND_IMPERIAL_LABEL
-    } else {
-        Constants.WIND_METRIC_IMPERIAL_LABEL
-    }
-
-
+    val windUnit       by viewModel.windUnit.collectAsStateWithLifecycle()
 
     WeatherContent(
         currentWeatherState = currentWeather,
         hourlyState         = hourlyState,
         dailyState          = dailyState,
         appLanguage         = appLang,
-        windUnitLabel       = windUnitLabel,
+        windUnit            = windUnit,
         onRetry             = { viewModel.retry() }
     )
 }
@@ -103,7 +91,7 @@ fun WeatherContent(
     hourlyState:         ResponseState<HourlyForecastResponse>,
     dailyState:          ResponseState<DailyForecastResponse>,
     appLanguage:         String,
-    windUnitLabel:       String,
+    windUnit:            String,
     onRetry:             () -> Unit,
     modifier:            Modifier = Modifier
 ) {
@@ -137,13 +125,12 @@ fun WeatherContent(
                     currentTimeEpoch = System.currentTimeMillis() / 1000
                 )
                 StatsRow(
-                    data          = state.data,
-                    windUnitLabel = windUnitLabel
+                    data     = state.data,
+                    windUnit = windUnit
                 )
             }
         }
 
-        // ── Hourly forecast ───────────────────────────────────────────────────
         when (val state = hourlyState) {
             is ResponseState.Loading -> LoadingCard(modifier = Modifier.height(120.dp))
             is ResponseState.Failure -> Unit
@@ -264,9 +251,23 @@ private const val STAT_CARD_HEIGHT_DP = 100
 
 @Composable
 private fun StatsRow(
-    data:          WeatherResponse,
-    windUnitLabel: String
+    data:     WeatherResponse,
+    windUnit: String
 ) {
+    val (windValue, windLabel) = when (windUnit) {
+        Constants.WIND_UNIT_MPH -> {
+            val mph = data.wind.speed * 2.237
+            "%.1f".format(mph) to stringResource(R.string.settings_wind_mph)
+        }
+        Constants.WIND_UNIT_KMH -> {
+            val kmh = data.wind.speed * 3.6
+            "%.1f".format(kmh) to stringResource(R.string.settings_wind_kmh)
+        }
+        else -> {
+            "%.1f".format(data.wind.speed) to stringResource(R.string.settings_wind_ms)
+        }
+    }
+
     Row(
         modifier              = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -282,7 +283,7 @@ private fun StatsRow(
             modifier = Modifier.weight(1f).height(STAT_CARD_HEIGHT_DP.dp),
             icon     = R.drawable.ic_stat_wind,
             label    = stringResource(R.string.home_wind),
-            value    = "${data.wind.speed} $windUnitLabel"
+            value    = "$windValue $windLabel"
         )
         data.main.pressure.let {
             when {

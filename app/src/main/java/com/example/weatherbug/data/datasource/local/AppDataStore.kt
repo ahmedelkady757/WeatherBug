@@ -26,6 +26,7 @@ class AppDataStore(private val context: Context) {
         val KEY_THEME          = stringPreferencesKey(Constants.KEY_THEME)
         val KEY_LANGUAGE       = stringPreferencesKey(Constants.KEY_LANGUAGE)
         val KEY_TEMP_UNIT      = stringPreferencesKey(Constants.KEY_TEMP_UNIT)
+        val KEY_WIND_UNIT      = stringPreferencesKey(Constants.KEY_WIND_UNIT)
         val KEY_LOCATION_MODE  = stringPreferencesKey(Constants.KEY_LOCATION_MODE)
         val KEY_SAVED_LAT      = doublePreferencesKey(Constants.KEY_SAVED_LAT)
         val KEY_SAVED_LON      = doublePreferencesKey(Constants.KEY_SAVED_LON)
@@ -52,10 +53,33 @@ class AppDataStore(private val context: Context) {
             AppLogger.logDataStoreError(Constants.KEY_LANGUAGE, e)
         }
         .map { prefs ->
-            val value = prefs[KEY_LANGUAGE] ?: Constants.LANG_ENGLISH
+            val value = prefs[KEY_LANGUAGE] ?: Constants.LANG_DEVICE
             AppLogger.logDataStoreRead(Constants.KEY_LANGUAGE, value)
             value
         }
+
+    /**
+     * Resolves the stored language preference to a concrete BCP-47 language tag
+     * that the OpenWeatherMap API (and date formatters) understand.
+     *
+     * - "device" → reads the current OS locale and extracts its language code
+     *              (e.g. "ar", "en", "fr"). Falls back to "en" if unrecognised.
+     * - "en" / "ar" / any explicit code → returned as-is.
+     *
+     * **Always use this flow when making API calls or formatting dates.**
+     * Use the raw [languageFlow] only to read which chip is selected in Settings.
+     */
+    val effectiveLangFlow: Flow<String> = languageFlow.map { stored ->
+        if (stored == Constants.LANG_DEVICE) {
+            val deviceLang = context.resources.configuration.locales[0].language
+            AppLogger.logDataStoreRead("effectiveLang", "device → $deviceLang")
+            // OWM supports many codes; pass through whatever the device reports.
+            // For our supported set, "ar" and "en" are the relevant ones.
+            deviceLang.ifBlank { Constants.LANG_ENGLISH }
+        } else {
+            stored
+        }
+    }
 
     val tempUnitFlow: Flow<String> = context.dataStore.data
         .catch { e ->
@@ -94,6 +118,14 @@ class AppDataStore(private val context: Context) {
         .map { prefs ->
             val value = prefs[KEY_SAVED_LON] ?: Constants.FALLBACK_LON
             AppLogger.logDataStoreRead(Constants.KEY_SAVED_LON, value)
+            value
+        }
+
+    val windUnitFlow: Flow<String> = context.dataStore.data
+        .catch { e -> AppLogger.logDataStoreError(Constants.KEY_WIND_UNIT, e) }
+        .map { prefs ->
+            val value = prefs[KEY_WIND_UNIT] ?: Constants.WIND_UNIT_MS
+            AppLogger.logDataStoreRead(Constants.KEY_WIND_UNIT, value)
             value
         }
 
@@ -149,6 +181,13 @@ class AppDataStore(private val context: Context) {
         context.dataStore.edit { prefs ->
             prefs[KEY_IS_FIRST_LAUNCH] = false
             AppLogger.logDataStoreWrite(Constants.KEY_IS_FIRST_LAUNCH, false)
+        }
+    }
+
+    suspend fun saveWindUnit(unit: String) {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_WIND_UNIT] = unit
+            AppLogger.logDataStoreWrite(Constants.KEY_WIND_UNIT, unit)
         }
     }
 

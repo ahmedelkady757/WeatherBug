@@ -35,11 +35,7 @@ fun NavGraph(
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
                 },
-                onNavigateToMapPicker = {
-                    navController.navigate(Screen.MapPicker.createRoute(Screen.MapPicker.MODE_SETTINGS)) {
-                        popUpTo(Screen.Splash.route) { inclusive = true }
-                    }
-                }
+
             )
         }
 
