@@ -48,7 +48,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.weatherbug.R
-import com.example.weatherbug.data.datasource.local.AppDataStore
+import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.data.models.GeocodingItem
 import com.example.weatherbug.navigation.Screen
 import com.example.weatherbug.presentation.map.viewmodel.MapPickerEvent
@@ -75,7 +75,7 @@ fun MapPickerScreen(
     onNavigateBack:  () -> Unit
 ) {
     val viewModel: MapPickerViewModel = koinViewModel()
-    val dataStore: AppDataStore       = koinInject()
+    val dataStore: IAppDataStore       = koinInject()
 
     val selectedLatLng  by viewModel.selectedLatLng.collectAsStateWithLifecycle()
     val resolvedCity    by viewModel.resolvedCityName.collectAsStateWithLifecycle()

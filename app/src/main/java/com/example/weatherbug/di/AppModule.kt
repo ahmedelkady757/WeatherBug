@@ -2,6 +2,7 @@ package com.example.weatherbug.di
 
 import androidx.room.Room
 import com.example.weatherbug.data.datasource.local.AppDataStore
+import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.data.datasource.local.ILocalDataSource
 import com.example.weatherbug.data.datasource.local.LocalDataSource
 import com.example.weatherbug.data.datasource.remote.IRemoteDataSource
@@ -18,6 +19,8 @@ import com.example.weatherbug.presentation.map.viewmodel.MapPickerViewModel
 import com.example.weatherbug.presentation.settings.viewmodel.SettingsViewModel
 import com.example.weatherbug.presentation.splash.viewmodel.SplashViewModel
 import com.example.weatherbug.util.Constants
+import com.example.weatherbug.location.FusedLocationProvider
+import com.example.weatherbug.location.LocationProvider
 import com.google.android.gms.location.LocationServices
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -27,7 +30,7 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-    single { AppDataStore(androidContext()) }
+    single<IAppDataStore> { AppDataStore(androidContext()) }
 
     single {
         Room.databaseBuilder(
@@ -40,6 +43,8 @@ val appModule = module {
     single { get<WeatherBugDatabase>().weatherBugDao() }
 
     single { LocationServices.getFusedLocationProviderClient(androidContext()) }
+
+    single<LocationProvider> { FusedLocationProvider(client = get()) }
 }
 
 
@@ -84,8 +89,8 @@ val repoModule = module {
 
     viewModel {
         LocationViewModel(
-            dataStore   = get(),
-            fusedClient = get()
+            dataStore        = get(),
+            locationProvider = get()
         )
     }
 
@@ -98,8 +103,8 @@ val repoModule = module {
 
     viewModel { (locationViewModel: LocationViewModel) ->
         SettingsViewModel(
-            dataStore = get(),
-            locationViewModel = locationViewModel
+            dataStore    = get(),
+            onRefreshGps = locationViewModel::refreshLocation
         )
     }
 

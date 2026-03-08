@@ -2,7 +2,7 @@ package com.example.weatherbug.presentation.map.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weatherbug.data.datasource.local.AppDataStore
+import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.data.models.FavouriteWeatherItem
 import com.example.weatherbug.data.models.GeocodingItem
 import com.example.weatherbug.data.repo.WeatherRepo
@@ -31,7 +31,7 @@ sealed class MapPickerEvent {
 
 class MapPickerViewModel(
     private val repo:      WeatherRepo,
-    private val dataStore: AppDataStore
+    private val dataStore: IAppDataStore
 ) : ViewModel() {
 
 

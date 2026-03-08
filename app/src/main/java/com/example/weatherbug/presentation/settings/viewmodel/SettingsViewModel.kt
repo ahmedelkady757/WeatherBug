@@ -2,8 +2,7 @@ package com.example.weatherbug.presentation.settings.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weatherbug.data.datasource.local.AppDataStore
-import com.example.weatherbug.presentation.location.LocationViewModel
+import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.util.AppLogger
 import com.example.weatherbug.util.Constants
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,8 +21,8 @@ sealed class SettingsNavEvent {
 
 
 class SettingsViewModel(
-    private val dataStore:         AppDataStore,
-    private val locationViewModel: LocationViewModel
+    private val dataStore:      IAppDataStore,
+    private val onRefreshGps:  () -> Unit        // injected action — decoupled from LocationViewModel
 ) : ViewModel() {
 
 
@@ -88,7 +87,7 @@ class SettingsViewModel(
                 }
                 Constants.LOCATION_GPS -> {
                     AppLogger.logVmEvent("SettingsViewModel", "mode=gps → refreshLocation")
-                    locationViewModel.refreshLocation()
+                    onRefreshGps()
                 }
             }
         }
