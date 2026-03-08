@@ -56,6 +56,8 @@ import com.example.weatherbug.presentation.home.viewmodel.HomeViewModel
 import com.example.weatherbug.presentation.location.LocationViewModel
 import com.example.weatherbug.util.Constants
 import com.example.weatherbug.util.DateFormatter
+import com.example.weatherbug.util.isNoInternetError
+import com.example.weatherbug.util.NoInternetScreen
 import com.example.weatherbug.util.ResponseState
 import com.example.weatherbug.util.WeatherIconMapper
 import kotlinx.coroutines.delay
@@ -104,6 +106,14 @@ fun WeatherContent(
     onRetry:             () -> Unit,
     modifier:            Modifier = Modifier
 ) {
+    when (val state = currentWeatherState) {
+        is ResponseState.Failure -> if (isNoInternetError(state.errorMessage)) {
+            NoInternetScreen(modifier = modifier.fillMaxSize(), onRetry = onRetry)
+            return
+        }
+        else -> Unit
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
