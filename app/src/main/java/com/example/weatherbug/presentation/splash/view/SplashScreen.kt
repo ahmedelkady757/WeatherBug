@@ -2,6 +2,9 @@ package com.example.weatherbug.presentation.splash.view
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -9,8 +12,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,22 +24,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.weatherbug.R
 import com.example.weatherbug.presentation.splash.viewmodel.SplashNavEvent
 import com.example.weatherbug.presentation.splash.viewmodel.SplashViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
-private const val SPLASH_DURATION_MS    = 2000L
-private const val ANIM_ICON_DURATION_MS = 800
-private const val ANIM_TEXT_DURATION_MS = 600
-private const val ANIM_TEXT_DELAY_MS    = 300L
+private const val SPLASH_DISPLAY_MS       = 2_400L
+private const val ICON_SCALE_DURATION_MS  = 900
+private const val ICON_ALPHA_DURATION_MS  = 500
+private const val TITLE_DELAY_MS          = 350L
+private const val TITLE_DURATION_MS       = 550
+private const val TAGLINE_DELAY_MS        = 550L
+private const val TAGLINE_DURATION_MS     = 500
+private const val EXIT_FADE_MS            = 400
 
 
 @Composable
@@ -47,7 +57,6 @@ fun SplashScreen(
     val viewModel: SplashViewModel = koinViewModel()
     val navEvent by viewModel.navEvent.collectAsStateWithLifecycle()
 
-
     LaunchedEffect(navEvent) {
         when (navEvent) {
             is SplashNavEvent.Idle                -> Unit
@@ -56,71 +65,129 @@ fun SplashScreen(
         }
     }
 
-
-    val iconScale = remember { Animatable(0.3f) }
-    val iconAlpha = remember { Animatable(0f)   }
-    val textAlpha = remember { Animatable(0f)   }
-
+    val iconScale = remember { Animatable(0.4f) }
+    val iconAlpha = remember { Animatable(0f) }
+    val titleAlpha = remember { Animatable(0f) }
+    val titleOffsetY = remember { Animatable(24f) }
+    val taglineAlpha = remember { Animatable(0f) }
+    val taglineOffsetY = remember { Animatable(20f) }
+    val contentExitAlpha = remember { Animatable(1f) }
 
     LaunchedEffect(Unit) {
         iconScale.animateTo(
             targetValue   = 1f,
-            animationSpec = tween(durationMillis = ANIM_ICON_DURATION_MS, easing = FastOutSlowInEasing)
+            animationSpec = keyframes {
+                durationMillis = ICON_SCALE_DURATION_MS
+                0.4f at 0
+                1.08f at (ICON_SCALE_DURATION_MS * 0.65).toInt()
+                0.98f at (ICON_SCALE_DURATION_MS * 0.85).toInt()
+                1f at ICON_SCALE_DURATION_MS
+            }
         )
         iconAlpha.animateTo(
             targetValue   = 1f,
-            animationSpec = tween(durationMillis = ANIM_ICON_DURATION_MS)
+            animationSpec = tween(durationMillis = ICON_ALPHA_DURATION_MS, easing = FastOutSlowInEasing)
         )
 
-        delay(ANIM_TEXT_DELAY_MS)
-        textAlpha.animateTo(
-            targetValue   = 1f,
-            animationSpec = tween(durationMillis = ANIM_TEXT_DURATION_MS)
-        )
+        delay(TITLE_DELAY_MS)
+        coroutineScope {
+            launch {
+                titleAlpha.animateTo(
+                    targetValue   = 1f,
+                    animationSpec = tween(durationMillis = TITLE_DURATION_MS, easing = FastOutSlowInEasing)
+                )
+            }
+            launch {
+                titleOffsetY.animateTo(
+                    targetValue   = 0f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness   = Spring.StiffnessLow
+                    )
+                )
+            }
+        }
 
-        val elapsed   = ANIM_ICON_DURATION_MS + ANIM_TEXT_DELAY_MS + ANIM_TEXT_DURATION_MS
-        val remaining = SPLASH_DURATION_MS - elapsed
+        delay(TAGLINE_DELAY_MS - TITLE_DELAY_MS)
+        coroutineScope {
+            launch {
+                taglineAlpha.animateTo(
+                    targetValue   = 1f,
+                    animationSpec = tween(durationMillis = TAGLINE_DURATION_MS, easing = FastOutSlowInEasing)
+                )
+            }
+            launch {
+                taglineOffsetY.animateTo(
+                    targetValue   = 0f,
+                    animationSpec = tween(durationMillis = TAGLINE_DURATION_MS, easing = FastOutSlowInEasing)
+                )
+            }
+        }
+
+        val animTotal = TITLE_DELAY_MS + TITLE_DURATION_MS + (TAGLINE_DELAY_MS - TITLE_DELAY_MS) + TAGLINE_DURATION_MS
+        val remaining = SPLASH_DISPLAY_MS - animTotal
         if (remaining > 0L) delay(remaining)
 
+        contentExitAlpha.animateTo(
+            targetValue   = 0f,
+            animationSpec = tween(durationMillis = EXIT_FADE_MS, easing = FastOutSlowInEasing)
+        )
         viewModel.decideNavigation()
     }
 
+    val primary = MaterialTheme.colorScheme.primary
+    val surface = MaterialTheme.colorScheme.surface
+    val gradient = Brush.verticalGradient(
+        colors = listOf(
+            surface,
+            surface.copy(alpha = 0.98f),
+            primary.copy(alpha = 0.08f),
+            surface
+        )
+    )
 
     Box(
-        modifier         = Modifier
+        modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(gradient),
         contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-            Icon(
-                painter            = painterResource(R.drawable.ic_launcher_foreground),
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.alpha(contentExitAlpha.value)
+        ) {
+            androidx.compose.foundation.Image(
+                painter = painterResource(R.mipmap.ic_launcher_foreground),
                 contentDescription = null,
-                tint               = Color.Unspecified,
-                modifier           = Modifier
-                    .size(120.dp)
+                modifier = Modifier
+                    .size(140.dp)
                     .scale(iconScale.value)
                     .alpha(iconAlpha.value)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             Text(
                 text       = stringResource(R.string.app_name),
-                style      = MaterialTheme.typography.displayLarge,
-                fontWeight = FontWeight.Bold,
+                style      = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = (-0.5).sp
+                ),
                 color      = MaterialTheme.colorScheme.primary,
-                modifier   = Modifier.alpha(textAlpha.value)
+                modifier   = Modifier
+                    .alpha(titleAlpha.value)
+                    .offset(y = titleOffsetY.value.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Text(
                 text     = stringResource(R.string.splash_tagline),
                 style    = MaterialTheme.typography.bodyLarge,
-                color    = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.alpha(textAlpha.value)
+                color    = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .alpha(taglineAlpha.value)
+                    .offset(y = taglineOffsetY.value.dp)
             )
         }
     }

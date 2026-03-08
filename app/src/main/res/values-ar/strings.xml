@@ -33,11 +33,11 @@
     <string name="settings_lang_english">الإنجليزية</string>
     <string name="settings_lang_arabic">العربية</string>
     <string name="settings_temp_unit">وحدة الحرارة</string>
-    <string name="settings_unit_celsius">°م</string>
-    <string name="settings_unit_fahrenheit">°ف</string>
-    <string name="settings_unit_kelvin">كلفن</string>
+    <string name="settings_unit_celsius">درجة مئوية C°</string>
+    <string name="settings_unit_fahrenheit">فهرنهايت F°</string>
+    <string name="settings_unit_kelvin">كلفن K°</string>
     <string name="settings_location_mode">مصدر الموقع</string>
-    <string name="settings_location_gps">GPS</string>
+    <string name="settings_location_gps">نظام تحديد الموقع</string>
     <string name="settings_location_map">الخريطة</string>
 
     <string name="location_permission_title">صلاحية الموقع مطلوبة</string>

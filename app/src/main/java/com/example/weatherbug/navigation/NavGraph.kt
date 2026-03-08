@@ -11,6 +11,7 @@ import com.example.weatherbug.presentation.home.view.HomeScreen
 import com.example.weatherbug.presentation.location.LocationViewModel
 import com.example.weatherbug.presentation.map.view.MapPickerScreen
 import com.example.weatherbug.presentation.settings.view.SettingsScreen
+import com.example.weatherbug.presentation.splash.view.SplashScreen
 import com.example.weatherbug.util.AppLogger
 
 
@@ -22,9 +23,25 @@ fun NavGraph(
 ) {
     NavHost(
         navController    = navController,
-        startDestination = Screen.Home.route,
+        startDestination = Screen.Splash.route,
         modifier         = modifier
     ) {
+
+        composable(route = Screen.Splash.route) {
+            AppLogger.logNavigation("NavGraph", "Splash")
+            SplashScreen(
+                onNavigateToHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                },
+                onNavigateToMapPicker = {
+                    navController.navigate(Screen.MapPicker.createRoute(Screen.MapPicker.MODE_SETTINGS)) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                }
+            )
+        }
 
         composable(route = Screen.Home.route) {
             AppLogger.logNavigation("NavGraph", "Home")

@@ -33,9 +33,9 @@
     <string name="settings_lang_english">English</string>
     <string name="settings_lang_arabic">Arabic</string>
     <string name="settings_temp_unit">Temperature Unit</string>
-    <string name="settings_unit_celsius">°C</string>
-    <string name="settings_unit_fahrenheit">°F</string>
-    <string name="settings_unit_kelvin">K</string>
+    <string name="settings_unit_celsius">Celsius °C</string>
+    <string name="settings_unit_fahrenheit">Fahrenheit °F</string>
+    <string name="settings_unit_kelvin">Kelvin °K</string>
     <string name="settings_location_mode">Location Mode</string>
     <string name="settings_location_gps">GPS</string>
     <string name="settings_location_map">Map</string>
