@@ -222,7 +222,7 @@ fun MapPickerScreen(
                 Text(
                     text  = stringResource(R.string.map_picker_tap_hint),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
 
                 if (resolvedCity.isNotBlank()) {
