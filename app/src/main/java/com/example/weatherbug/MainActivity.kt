@@ -42,7 +42,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.weatherbug.data.datasource.local.AppDataStore
+import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.navigation.NavGraph
 import com.example.weatherbug.navigation.Screen
 import com.example.weatherbug.presentation.location.LocationViewModel
@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
                 }
         }
         setContent {
-            val dataStore: AppDataStore = koinInject()
+            val dataStore: IAppDataStore = koinInject()
             val themeValue by dataStore.themeFlow.collectAsState(initial = Constants.THEME_LIGHT)
             val darkTheme  = themeValue == Constants.THEME_DARK
             val appLang    by dataStore.languageFlow.collectAsState(initial = Constants.LANG_ENGLISH)

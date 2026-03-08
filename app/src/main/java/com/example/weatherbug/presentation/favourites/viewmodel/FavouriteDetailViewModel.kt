@@ -2,7 +2,7 @@ package com.example.weatherbug.presentation.favourites.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weatherbug.data.datasource.local.AppDataStore
+import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.data.models.DailyForecastResponse
 import com.example.weatherbug.data.models.HourlyForecastResponse
 import com.example.weatherbug.data.models.WeatherResponse
@@ -27,7 +27,7 @@ class FavouriteDetailViewModel(
     private val lat:       Double,
     private val lon:       Double,
     private val repo:      WeatherRepo,
-    private val dataStore: AppDataStore
+    private val dataStore: IAppDataStore
 ) : ViewModel() {
 
 

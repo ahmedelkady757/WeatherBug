@@ -3,7 +3,7 @@ package com.example.weatherbug.presentation.location
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weatherbug.data.datasource.local.AppDataStore
+import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.util.AppLogger
 import com.example.weatherbug.util.Constants
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -22,7 +22,7 @@ import kotlin.coroutines.resume
 
 
 class LocationViewModel(
-    private val dataStore:   AppDataStore,
+    private val dataStore:   IAppDataStore,
     private val fusedClient: FusedLocationProviderClient
 ) : ViewModel() {
 

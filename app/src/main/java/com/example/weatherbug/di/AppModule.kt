@@ -2,6 +2,7 @@ package com.example.weatherbug.di
 
 import androidx.room.Room
 import com.example.weatherbug.data.datasource.local.AppDataStore
+import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.data.datasource.local.ILocalDataSource
 import com.example.weatherbug.data.datasource.local.LocalDataSource
 import com.example.weatherbug.data.datasource.remote.IRemoteDataSource
@@ -27,7 +28,7 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-    single { AppDataStore(androidContext()) }
+    single<IAppDataStore> { AppDataStore(androidContext()) }
 
     single {
         Room.databaseBuilder(

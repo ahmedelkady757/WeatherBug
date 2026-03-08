@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.weatherbug.R
-import com.example.weatherbug.data.datasource.local.AppDataStore
+import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.presentation.favourites.viewmodel.FavouritesDialog
 import com.example.weatherbug.presentation.favourites.viewmodel.FavouritesViewModel
 import com.example.weatherbug.util.Constants
@@ -51,7 +51,7 @@ fun FavouritesScreen(
     modifier:              Modifier = Modifier
 ) {
     val viewModel: FavouritesViewModel = koinViewModel()
-    val dataStore: AppDataStore        = koinInject()
+    val dataStore: IAppDataStore        = koinInject()
 
     val favourites   by viewModel.favourites.collectAsState()
     val activeDialog by viewModel.activeDialog.collectAsState()

@@ -2,7 +2,7 @@ package com.example.weatherbug.presentation.splash.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weatherbug.data.datasource.local.AppDataStore
+import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.util.AppLogger
 import com.example.weatherbug.util.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,7 @@ sealed class SplashNavEvent {
 
 
 class SplashViewModel(
-    private val appDataStore: AppDataStore
+    private val appDataStore: IAppDataStore
 ) : ViewModel() {
 
     private val _navEvent = MutableStateFlow<SplashNavEvent>(SplashNavEvent.Idle)

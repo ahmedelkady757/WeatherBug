@@ -2,7 +2,7 @@ package com.example.weatherbug.presentation.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weatherbug.data.datasource.local.AppDataStore
+import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.data.models.DailyForecastResponse
 import com.example.weatherbug.data.models.HourlyForecastResponse
 import com.example.weatherbug.data.models.WeatherResponse
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val repo:      WeatherRepo,
-    private val dataStore: AppDataStore
+    private val dataStore: IAppDataStore
 ) : ViewModel() {
 
     val appLanguage: StateFlow<String> = dataStore.effectiveLangFlow

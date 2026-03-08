@@ -2,7 +2,7 @@ package com.example.weatherbug.presentation.settings.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weatherbug.data.datasource.local.AppDataStore
+import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.presentation.location.LocationViewModel
 import com.example.weatherbug.util.AppLogger
 import com.example.weatherbug.util.Constants
@@ -22,7 +22,7 @@ sealed class SettingsNavEvent {
 
 
 class SettingsViewModel(
-    private val dataStore:         AppDataStore,
+    private val dataStore:         IAppDataStore,
     private val locationViewModel: LocationViewModel
 ) : ViewModel() {
 
