@@ -1,14 +1,11 @@
 package com.example.weatherbug.presentation.location
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherbug.data.datasource.local.IAppDataStore
+import com.example.weatherbug.location.LocationProvider
 import com.example.weatherbug.util.AppLogger
 import com.example.weatherbug.util.Constants
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.Priority
-import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -17,13 +14,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
 
 
 class LocationViewModel(
-    private val dataStore:   IAppDataStore,
-    private val fusedClient: FusedLocationProviderClient
+    private val dataStore:        IAppDataStore,
+    private val locationProvider: LocationProvider
 ) : ViewModel() {
 
     private val _permissionState = MutableStateFlow<PermissionState>(PermissionState.Idle)
@@ -39,7 +34,7 @@ class LocationViewModel(
         viewModelScope.launch {
             val gpsEnabled = dataStore.gpsEnabledFlow.first()
             _permissionState.value = if (gpsEnabled) PermissionState.Granted
-            else            PermissionState.Denied
+                                     else            PermissionState.Denied
             AppLogger.logVmEvent(
                 "LocationViewModel",
                 "init: gpsEnabled=$gpsEnabled → ${_permissionState.value}"
@@ -69,7 +64,6 @@ class LocationViewModel(
                 return@launch
             }
 
-            // GPS mode behaviour: always ask until user grants at OS level.
             AppLogger.logVmEvent(
                 "LocationViewModel",
                 "GPS mode → request permission (firstLaunch=$isFirstLaunch)"
@@ -101,7 +95,6 @@ class LocationViewModel(
             val isFirstLaunch = dataStore.isFirstLaunchFlow.first()
 
             if (isFirstLaunch) {
-                // First launch & permission denied → use fallback Cairo coords and persist them
                 val fallbackLat = Constants.FALLBACK_LAT
                 val fallbackLon = Constants.FALLBACK_LON
                 AppLogger.logVmEvent(
@@ -112,7 +105,6 @@ class LocationViewModel(
                 _locationState.value = LocationState.Success(fallbackLat, fallbackLon)
                 dataStore.setFirstLaunchDone()
             } else {
-                // Not first launch → keep and reuse last stored values
                 val savedLat = dataStore.savedLatFlow.first()
                 val savedLon = dataStore.savedLonFlow.first()
                 AppLogger.logVmEvent(
@@ -132,39 +124,21 @@ class LocationViewModel(
     }
 
 
-    @SuppressLint("MissingPermission")
     private suspend fun fetchAndSaveLocation() {
         _locationState.value = LocationState.Loading
         AppLogger.logVmEvent("LocationViewModel", "fetchAndSaveLocation()")
 
-        val lastLocation = suspendCancellableCoroutine { cont ->
-            fusedClient.lastLocation
-                .addOnSuccessListener { cont.resume(it) }
-                .addOnFailureListener {
-                    AppLogger.logVmError("LocationViewModel", "lastLocation failed: ${it.message}")
-                    cont.resume(null)
-                }
-        }
-
-        if (lastLocation != null) {
-            saveAndEmit(lastLocation.latitude, lastLocation.longitude)
+        // Try cached location first (fast path)
+        val last = locationProvider.getLastLocation()
+        if (last != null) {
+            saveAndEmit(last.first, last.second)
             return
         }
 
         AppLogger.logVmEvent("LocationViewModel", "lastLocation null → fresh fix")
-        val cts = CancellationTokenSource()
-        val freshLocation = suspendCancellableCoroutine { cont ->
-            fusedClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.token)
-                .addOnSuccessListener { cont.resume(it) }
-                .addOnFailureListener {
-                    AppLogger.logVmError("LocationViewModel", "freshLocation failed: ${it.message}")
-                    cont.resume(null)
-                }
-            cont.invokeOnCancellation { cts.cancel() }
-        }
-
-        if (freshLocation != null) {
-            saveAndEmit(freshLocation.latitude, freshLocation.longitude)
+        val fresh = locationProvider.getCurrentLocation()
+        if (fresh != null) {
+            saveAndEmit(fresh.first, fresh.second)
         } else {
             AppLogger.logVmEvent("LocationViewModel", "both failed → DataStore fallback")
             val savedLat = dataStore.savedLatFlow.first()

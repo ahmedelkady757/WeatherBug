@@ -19,6 +19,8 @@ import com.example.weatherbug.presentation.map.viewmodel.MapPickerViewModel
 import com.example.weatherbug.presentation.settings.viewmodel.SettingsViewModel
 import com.example.weatherbug.presentation.splash.viewmodel.SplashViewModel
 import com.example.weatherbug.util.Constants
+import com.example.weatherbug.location.FusedLocationProvider
+import com.example.weatherbug.location.LocationProvider
 import com.google.android.gms.location.LocationServices
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -41,6 +43,8 @@ val appModule = module {
     single { get<WeatherBugDatabase>().weatherBugDao() }
 
     single { LocationServices.getFusedLocationProviderClient(androidContext()) }
+
+    single<LocationProvider> { FusedLocationProvider(client = get()) }
 }
 
 
@@ -85,8 +89,8 @@ val repoModule = module {
 
     viewModel {
         LocationViewModel(
-            dataStore   = get(),
-            fusedClient = get()
+            dataStore        = get(),
+            locationProvider = get()
         )
     }
 
