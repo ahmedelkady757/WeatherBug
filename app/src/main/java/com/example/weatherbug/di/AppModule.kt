@@ -11,6 +11,8 @@ import com.example.weatherbug.data.db.WeatherBugDatabase
 import com.example.weatherbug.data.network.RetrofitClient
 import com.example.weatherbug.data.repo.WeatherRepo
 import com.example.weatherbug.data.repo.WeatherRepoImpl
+import com.example.weatherbug.alerts.AlarmScheduler
+import com.example.weatherbug.presentation.alerts.viewmodel.AlertsViewModel
 import com.example.weatherbug.presentation.favourites.viewmodel.FavouriteDetailViewModel
 import com.example.weatherbug.presentation.favourites.viewmodel.FavouritesViewModel
 import com.example.weatherbug.presentation.home.viewmodel.HomeViewModel
@@ -45,6 +47,8 @@ val appModule = module {
     single { LocationServices.getFusedLocationProviderClient(androidContext()) }
 
     single<LocationProvider> { FusedLocationProvider(client = get()) }
+
+    single { AlarmScheduler(context = androidContext()) }
 }
 
 
@@ -84,7 +88,7 @@ val repoModule = module {
 
 
     viewModel {
-        SplashViewModel()
+        SplashViewModel(appDataStore = get())
     }
 
     viewModel {
@@ -125,6 +129,13 @@ val repoModule = module {
         MapPickerViewModel(
             repo = get(),
             dataStore = get()
+        )
+    }
+
+    viewModel {
+        AlertsViewModel(
+            repo      = get(),
+            scheduler = get()
         )
     }
 }
