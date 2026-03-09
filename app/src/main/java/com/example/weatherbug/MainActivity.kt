@@ -82,7 +82,6 @@ class MainActivity : ComponentActivity() {
         AppLogger.logVmEvent("MainActivity", "onCreate")
 
         observePermissionRequests()
-        locationViewModel.checkAndRequestOnLaunch()
 
         splashScreen.setOnExitAnimationListener { splashScreenView ->
             val iconView = splashScreenView.iconView

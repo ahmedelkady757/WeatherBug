@@ -34,8 +34,9 @@ fun NavGraph(
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
+                    // Ask for location AFTER splash is gone, not during animation
+                    locationViewModel.checkAndRequestOnLaunch()
                 },
-
             )
         }
 
