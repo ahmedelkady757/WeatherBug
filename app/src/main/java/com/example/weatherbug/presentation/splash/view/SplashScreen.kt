@@ -130,7 +130,7 @@ fun SplashScreen(
             targetValue   = 0f,
             animationSpec = tween(durationMillis = EXIT_FADE_MS, easing = FastOutSlowInEasing)
         )
-        onNavigateToHome()
+        viewModel.onAnimationCompleted()   // VM emits NavigateToHome → LaunchedEffect(navEvent) handles it
 
     }
 

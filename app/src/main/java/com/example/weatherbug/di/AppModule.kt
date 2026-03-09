@@ -84,7 +84,7 @@ val repoModule = module {
 
 
     viewModel {
-        SplashViewModel(appDataStore = get())
+        SplashViewModel()
     }
 
     viewModel {
