@@ -70,8 +70,6 @@ dependencies {
     implementation(libs.play.services.maps)
     ksp("androidx.room:room-compiler:2.6.1")
 
-    // Google Maps Compose for map picker UI
-    // Use a version compatible with Kotlin 2.0.x
     implementation("com.google.maps.android:maps-compose:6.1.0")
 
     implementation("androidx.datastore:datastore-preferences:1.1.1")
