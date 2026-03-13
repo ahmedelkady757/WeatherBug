@@ -37,7 +37,7 @@ internal fun HourlyForecastCard(items: List<HourlyForecastResponse.HourlyItem>) 
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(20.dp),
         colors    = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
         )
     ) {
         Column(modifier = Modifier.padding(vertical = 16.dp)) {
@@ -74,10 +74,10 @@ private fun HourlyItem(item: HourlyForecastResponse.HourlyItem) {
         shape     = RoundedCornerShape(20.dp),
         border    = BorderStroke(
             width = 1.dp,
-            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.8f)
         ),
         colors    = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.30f)
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.10f)
         ),
         modifier  = Modifier.width(90.dp)
     ) {
