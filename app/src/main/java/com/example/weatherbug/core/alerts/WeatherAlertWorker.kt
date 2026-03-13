@@ -19,6 +19,7 @@ import com.example.weatherbug.core.util.ResponseState
 import kotlinx.coroutines.flow.first
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.Calendar
 import kotlin.math.roundToInt
 
 class WeatherAlertWorker(
@@ -28,6 +29,7 @@ class WeatherAlertWorker(
 
     private val repo:      WeatherRepo   by inject()
     private val dataStore: IAppDataStore by inject()
+    private val scheduler: AlarmScheduler by inject()
 
     override suspend fun doWork(): Result {
         val alertId          = inputData.getInt(KEY_ALERT_ID, -1)
@@ -52,7 +54,7 @@ class WeatherAlertWorker(
             
             if (!AlertItem.matches(condition, apiMain)) {
                 AppLogger.d("WeatherAlertWorker: Condition MISMATCH. Skipping notification.", "WB_ALERTS")
-                if (alertId != -1) repo.deleteAlertById(alertId)
+                rescheduleForNextDay(alertId)
                 return Result.success()
             }
             AppLogger.d("WeatherAlertWorker: Condition MATCH. Proceeding to notification.", "WB_ALERTS")
@@ -100,9 +102,26 @@ class WeatherAlertWorker(
         } else {
         }
 
-        if (alertId != -1) repo.deleteAlertById(alertId)
+        rescheduleForNextDay(alertId)
 
         return Result.success()
+    }
+
+    private suspend fun rescheduleForNextDay(alertId: Int) {
+        if (alertId != -1) {
+            val alerts = repo.getAllAlerts().first()
+            val alert = alerts.find { it.id == alertId }
+            if (alert != null) {
+                val cal = Calendar.getInstance().apply { timeInMillis = alert.startTime }
+                cal.add(Calendar.DAY_OF_YEAR, 1)
+                val newStart = cal.timeInMillis
+                
+                val nextAlert = alert.copy(startTime = newStart, endTime = newStart)
+                repo.insertAlert(nextAlert)
+                scheduler.schedule(nextAlert)
+                AppLogger.d("WeatherAlertWorker: Rescheduled alert $alertId for tomorrow at $newStart", "WB_ALERTS")
+            }
+        }
     }
 
 

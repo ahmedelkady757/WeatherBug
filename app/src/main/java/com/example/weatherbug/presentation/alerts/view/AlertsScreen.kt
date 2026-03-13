@@ -58,6 +58,13 @@ import com.example.weatherbug.data.models.AlertItem
 import com.example.weatherbug.presentation.alerts.viewmodel.AlertsDialog
 import com.example.weatherbug.presentation.alerts.viewmodel.AlertsViewModel
 import org.koin.androidx.compose.koinViewModel
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -69,6 +76,13 @@ fun AlertsScreen(modifier: Modifier = Modifier) {
     val viewModel: AlertsViewModel = koinViewModel()
     val alerts      by viewModel.alerts.collectAsState()
     val activeDialog by viewModel.dialog.collectAsState()
+
+    val context = LocalContext.current
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        viewModel.requestAdd()
+    }
 
     Scaffold(
         modifier    = modifier,
@@ -97,7 +111,21 @@ fun AlertsScreen(modifier: Modifier = Modifier) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = viewModel::requestAdd) {
+            FloatingActionButton(onClick = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val hasPermission = ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+                    if (!hasPermission) {
+                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        viewModel.requestAdd()
+                    }
+                } else {
+                    viewModel.requestAdd()
+                }
+            }) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.alerts_add))
             }
         }
@@ -238,7 +266,7 @@ private fun SwipeToDeleteAlertCard(
 
 @Composable
 private fun AlertItemCard(alert: AlertItem) {
-    val fmt = SimpleDateFormat("dd MMM yyyy  HH:mm", Locale.getDefault())
+    val fmt = SimpleDateFormat("HH:mm", Locale.getDefault())
     val isAlarm = alert.alarmType == AlertItem.ALARM_TYPE_ALARM
 
     Card(
@@ -293,12 +321,6 @@ private fun AlertItemCard(alert: AlertItem) {
                     text  = fmt.format(alert.startTime),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text  = stringResource(R.string.alerts_until, fmt.format(alert.endTime)),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline,
-                    fontSize = 12.sp
                 )
             }
         }
