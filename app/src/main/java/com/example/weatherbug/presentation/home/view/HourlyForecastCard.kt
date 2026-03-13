@@ -28,8 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.weatherbug.R
 import com.example.weatherbug.data.models.HourlyForecastResponse
-import com.example.weatherbug.util.DateFormatter
-import com.example.weatherbug.util.WeatherIconMapper
+import com.example.weatherbug.core.util.DateFormatter
+import com.example.weatherbug.core.util.WeatherIconMapper
 import kotlin.math.roundToInt
 
 @Composable

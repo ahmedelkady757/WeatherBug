@@ -70,4 +70,41 @@
     <string name="map_picker_tap_hint">اضغط في أي مكان على الخريطة لوضع دبوس</string>
     <string name="map_picker_confirm">تأكيد الموقع</string>
 
+    <string name="alerts_title">تنبيهات الطقس</string>
+    <string name="alerts_empty_title">لا توجد تنبيهات</string>
+    <string name="alerts_empty_subtitle">اضغط + لجدولة تنبيه طقس</string>
+    <string name="alerts_add">إضافة تنبيه</string>
+    <string name="alerts_delete_all">حذف جميع التنبيهات</string>
+    <string name="alerts_delete_one_title">حذف التنبيه؟</string>
+    <string name="alerts_delete_one_body">سيتم حذف هذا التنبيه نهائياً.</string>
+    <string name="alerts_delete_confirm">حذف</string>
+    <string name="alerts_delete_cancel">إلغاء</string>
+    <string name="alerts_delete_all_title">حذف جميع التنبيهات؟</string>
+    <string name="alerts_delete_all_body">سيتم حذف جميع التنبيهات المجدولة نهائياً.</string>
+    <string name="alerts_type_notification">إشعار</string>
+    <string name="alerts_type_alarm">منبّه</string>
+    <string name="alerts_dialog_title">جدولة تنبيه</string>
+    <string name="alerts_dialog_start">وقت البدء</string>
+    <string name="alerts_dialog_end">وقت الانتهاء</string>
+    <string name="alerts_dialog_type">نوع التنبيه</string>
+    <string name="alerts_dialog_confirm">جدولة</string>
+    <string name="alerts_dialog_cancel">إلغاء</string>
+    <string name="alerts_dialog_condition">حالة الطقس</string>
+    <string name="alerts_until">حتى %1$s</string>
+
+    <!-- Weather conditions -->
+    <string name="condition_any">أي طقس</string>
+    <string name="condition_rain">🌧 ممطر</string>
+    <string name="condition_snow">❄️ مثلج</string>
+    <string name="condition_thunderstorm">⛈ عاصفة رعدية</string>
+    <string name="condition_clear">☀️ صافي</string>
+    <string name="condition_clouds">☁️ غائم</string>
+    <string name="condition_fog">🌫 ضباب</string>
+
+    <string name="alert_channel_name">تنبيهات الطقس</string>
+    <string name="alert_channel_desc">تنبيهات حالة الطقس في الوقت المحدد</string>
+    <string name="alert_stop_alarm">إيقاف المنبه</string>
+    <string name="alert_notification_title">&#x2601; تنبيه الطقس &#x2014; %1$s</string>
+    <string name="alert_notification_body">&#x1F321; %1$d%2$s (يبدو %3$d%4$s) &#x2022; %5$s\n&#x1F4A7; الرطوبة: %6$d%% &#x2022; &#x1F4A8; الرياح: %7$d %8$s</string>
+
 </resources>

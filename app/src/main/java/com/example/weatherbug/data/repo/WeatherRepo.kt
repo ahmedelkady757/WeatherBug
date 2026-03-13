@@ -6,7 +6,7 @@ import com.example.weatherbug.data.models.FavouriteWeatherItem
 import com.example.weatherbug.data.models.GeocodingItem
 import com.example.weatherbug.data.models.HourlyForecastResponse
 import com.example.weatherbug.data.models.WeatherResponse
-import com.example.weatherbug.util.ResponseState
+import com.example.weatherbug.core.util.ResponseState
 import kotlinx.coroutines.flow.Flow
 
 

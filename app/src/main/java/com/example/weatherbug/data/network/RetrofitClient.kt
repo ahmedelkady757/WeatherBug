@@ -1,7 +1,7 @@
 package com.example.weatherbug.data.network
 
-import com.example.weatherbug.util.AppLogger
-import com.example.weatherbug.util.Constants
+import com.example.weatherbug.core.util.AppLogger
+import com.example.weatherbug.core.util.Constants
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

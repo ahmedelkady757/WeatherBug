@@ -31,7 +31,7 @@ import com.example.weatherbug.R
 import com.example.weatherbug.presentation.location.LocationViewModel
 import com.example.weatherbug.presentation.settings.viewmodel.SettingsNavEvent
 import com.example.weatherbug.presentation.settings.viewmodel.SettingsViewModel
-import com.example.weatherbug.util.Constants
+import com.example.weatherbug.core.util.Constants
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 

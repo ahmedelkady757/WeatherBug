@@ -70,8 +70,6 @@ dependencies {
     implementation(libs.play.services.maps)
     ksp("androidx.room:room-compiler:2.6.1")
 
-    // Google Maps Compose for map picker UI
-    // Use a version compatible with Kotlin 2.0.x
     implementation("com.google.maps.android:maps-compose:6.1.0")
 
     implementation("androidx.datastore:datastore-preferences:1.1.1")
@@ -83,6 +81,9 @@ dependencies {
 
     implementation("io.insert-koin:koin-android:3.5.6")
     implementation("io.insert-koin:koin-androidx-compose:3.5.6")
+    implementation("io.insert-koin:koin-androidx-workmanager:3.5.6")
+
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     implementation("io.coil-kt:coil-compose:2.6.0") // for weather icons
 

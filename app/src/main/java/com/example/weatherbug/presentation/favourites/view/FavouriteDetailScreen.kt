@@ -23,7 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.weatherbug.R
 import com.example.weatherbug.presentation.favourites.viewmodel.FavouriteDetailViewModel
 import com.example.weatherbug.presentation.home.view.WeatherContent
-import com.example.weatherbug.util.Constants
+import com.example.weatherbug.core.util.Constants
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 

@@ -1,4 +1,4 @@
-package com.example.weatherbug.navigation
+package com.example.weatherbug.core.navigation
 
 import java.net.URLDecoder
 import java.net.URLEncoder

@@ -3,9 +3,12 @@ package com.example.weatherbug
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.AlarmManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
@@ -43,12 +46,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.weatherbug.data.datasource.local.IAppDataStore
-import com.example.weatherbug.navigation.NavGraph
-import com.example.weatherbug.navigation.Screen
+import com.example.weatherbug.core.navigation.NavGraph
+import com.example.weatherbug.core.navigation.Screen
 import com.example.weatherbug.presentation.location.LocationViewModel
 import com.example.weatherbug.ui.theme.WeatherBugTheme
-import com.example.weatherbug.util.AppLogger
-import com.example.weatherbug.util.Constants
+import com.example.weatherbug.core.util.AppLogger
+import com.example.weatherbug.core.util.Constants
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.compose.koinInject
@@ -59,6 +62,11 @@ class MainActivity : ComponentActivity() {
 
     val locationViewModel: LocationViewModel by viewModel()
 
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        AppLogger.logVmEvent("MainActivity", "POST_NOTIFICATIONS granted=$granted")
+    }
 
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -82,6 +90,8 @@ class MainActivity : ComponentActivity() {
         AppLogger.logVmEvent("MainActivity", "onCreate")
 
         observePermissionRequests()
+        requestNotificationPermissionIfNeeded()
+        checkExactAlarmPermission()
 
         splashScreen.setOnExitAnimationListener { splashScreenView ->
             val iconView = splashScreenView.iconView
@@ -109,11 +119,21 @@ class MainActivity : ComponentActivity() {
                 else                  -> Locale.ENGLISH
             }
 
-            val localizedContext = run {
-                val config = Configuration(baseContext.resources.configuration)
-                config.setLocale(locale)
-                baseContext.createConfigurationContext(config)
-            }
+            // 1. Set JVM default locale so formatters like SimpleDateFormat use it natively
+            Locale.setDefault(locale)
+
+            val config = Configuration(baseContext.resources.configuration)
+            config.setLocale(locale)
+            config.setLayoutDirection(locale)
+
+            // 2. Force the Activity's resources to use this config.
+            // THIS is the secret for Dialogs: Compose Dialogs spawn a new Window using the 
+            // base Activity context. If we don't update it at the resource level, 
+            // the Dialog ignores our LocalContext and flips back to English!
+            @Suppress("DEPRECATION")
+            baseContext.resources.updateConfiguration(config, baseContext.resources.displayMetrics)
+
+            val localizedContext = baseContext.createConfigurationContext(config)
 
             val isArabic = locale.language == "ar"
             val layoutDirection = if (isArabic) LayoutDirection.Rtl else LayoutDirection.Ltr
@@ -179,7 +199,39 @@ class MainActivity : ComponentActivity() {
         )
         startActivity(intent)
     }
+
+
+    private fun requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+
+    private fun checkExactAlarmPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+            if (!alarmManager.canScheduleExactAlarms()) {
+                AlertDialog.Builder(this)
+                    .setTitle("Exact Alarms Needed")
+                    .setMessage("Weather alerts need exact alarm permission to fire at your chosen time. Please enable 'Alarms & Reminders' for this app.")
+                    .setPositiveButton("Open Settings") { _, _ ->
+                        startActivity(
+                            Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                                data = Uri.fromParts("package", packageName, null)
+                            }
+                        )
+                    }
+                    .setNegativeButton("Not now", null)
+                    .show()
+            }
+        }
+    }
 }
+
 
 
 @Composable

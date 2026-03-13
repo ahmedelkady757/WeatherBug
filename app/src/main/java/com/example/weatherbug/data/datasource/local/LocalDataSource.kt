@@ -3,7 +3,7 @@ package com.example.weatherbug.data.datasource.local
 import com.example.weatherbug.data.db.WeatherBugDao
 import com.example.weatherbug.data.models.AlertItem
 import com.example.weatherbug.data.models.FavouriteWeatherItem
-import com.example.weatherbug.util.AppLogger
+import com.example.weatherbug.core.util.AppLogger
 import kotlinx.coroutines.flow.Flow
 
 

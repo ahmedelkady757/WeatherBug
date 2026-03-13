@@ -2,6 +2,7 @@ package com.example.weatherbug.presentation.favourites.view
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,14 +38,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.weatherbug.R
 import com.example.weatherbug.data.models.FavouriteWeatherItem
-import com.example.weatherbug.util.WeatherIconMapper
+import com.example.weatherbug.core.util.WeatherIconMapper
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -148,8 +149,8 @@ private fun FavouriteCard(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             WeatherIconMapper.getIcon(item.icon)?.let { iconRes ->
-                androidx.compose.foundation.Image(
-                    painter            = androidx.compose.ui.res.painterResource(iconRes),
+                Image(
+                    painter            = painterResource(iconRes),
                     contentDescription = item.description,
                     modifier           = Modifier
                         .size(52.dp)

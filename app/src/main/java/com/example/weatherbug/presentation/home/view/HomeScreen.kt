@@ -20,9 +20,9 @@ import com.example.weatherbug.data.models.HourlyForecastResponse
 import com.example.weatherbug.data.models.WeatherResponse
 import com.example.weatherbug.presentation.home.viewmodel.HomeViewModel
 import com.example.weatherbug.presentation.location.LocationViewModel
-import com.example.weatherbug.util.ResponseState
-import com.example.weatherbug.util.NoInternetScreen
-import com.example.weatherbug.util.isNoInternetError
+import com.example.weatherbug.core.util.ResponseState
+import com.example.weatherbug.core.util.NoInternetScreen
+import com.example.weatherbug.core.util.isNoInternetError
 import org.koin.androidx.compose.koinViewModel
 
 

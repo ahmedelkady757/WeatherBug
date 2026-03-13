@@ -1,7 +1,9 @@
-package com.example.weatherbug.util
+package com.example.weatherbug.core.util
 
 
 import android.util.Log
+import org.json.JSONArray
+import org.json.JSONObject
 
 
 object AppLogger {
@@ -156,10 +158,10 @@ object AppLogger {
             val trimmed = raw.trim()
             when {
                 trimmed.startsWith("{") -> {
-                    org.json.JSONObject(trimmed).toString(2)
+                    JSONObject(trimmed).toString(2)
                 }
                 trimmed.startsWith("[") -> {
-                    org.json.JSONArray(trimmed).toString(2)
+                    JSONArray(trimmed).toString(2)
                 }
                 else -> raw
             }

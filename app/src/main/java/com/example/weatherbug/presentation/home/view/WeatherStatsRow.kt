@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.weatherbug.R
 import com.example.weatherbug.data.models.WeatherResponse
-import com.example.weatherbug.util.Constants
+import com.example.weatherbug.core.util.Constants
 
 private const val STAT_CARD_HEIGHT_DP = 100
 

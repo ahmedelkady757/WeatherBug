@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherbug.data.models.FavouriteWeatherItem
 import com.example.weatherbug.data.repo.WeatherRepo
-import com.example.weatherbug.util.AppLogger
+import com.example.weatherbug.core.util.AppLogger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
