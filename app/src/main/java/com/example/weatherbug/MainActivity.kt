@@ -7,6 +7,7 @@ import android.app.AlarmManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +16,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -55,11 +58,22 @@ import com.example.weatherbug.core.util.Constants
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.compose.koinInject
+
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import androidx.compose.runtime.LaunchedEffect
+import com.example.weatherbug.core.alerts.AlarmSoundPlayer
+import com.example.weatherbug.core.alerts.WeatherAlertWorker
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
 
+    private val _navigateToHome = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private val navigateToHomeFlow = _navigateToHome.asSharedFlow()
 
+    private var isLaunchedFromNotification = false
+    
     val locationViewModel: LocationViewModel by viewModel()
 
     private val notificationPermissionLauncher = registerForActivityResult(
@@ -92,18 +106,31 @@ class MainActivity : ComponentActivity() {
         observePermissionRequests()
         requestNotificationPermissionIfNeeded()
         checkExactAlarmPermission()
+        handleIntent(intent)
 
         splashScreen.setOnExitAnimationListener { splashScreenView ->
-            val iconView = splashScreenView.iconView
-            iconView
-                .animate()
-                .setDuration(500L)
-                .alpha(0f)
-                .scaleX(0.8f)
-                .scaleY(0.8f)
-                .withEndAction {
+            if (isLaunchedFromNotification) {
+                splashScreenView.remove()
+                return@setOnExitAnimationListener
+            }
+            try {
+                val iconView = splashScreenView.iconView
+                if (iconView != null) {
+                    iconView
+                        .animate()
+                        .setDuration(500L)
+                        .alpha(0f)
+                        .scaleX(0.8f)
+                        .scaleY(0.8f)
+                        .withEndAction {
+                            splashScreenView.remove()
+                        }
+                } else {
                     splashScreenView.remove()
                 }
+            } catch (e: Exception) {
+                splashScreenView.remove()
+            }
         }
         setContent {
             val dataStore: IAppDataStore = koinInject()
@@ -115,7 +142,7 @@ class MainActivity : ComponentActivity() {
 
             val locale = when (appLang) {
                 Constants.LANG_ARABIC -> Locale("ar")
-                Constants.LANG_DEVICE -> baseContext.resources.configuration.locales[0]
+                Constants.LANG_DEVICE -> Resources.getSystem().configuration.locales[0]
                 else                  -> Locale.ENGLISH
             }
 
@@ -145,14 +172,29 @@ class MainActivity : ComponentActivity() {
                 WeatherBugTheme(darkTheme = darkTheme) {
                     val navController = rememberNavController()
                     WeatherBugApp(
-                        navController     = navController,
-                        locationViewModel = locationViewModel
+                        navController      = navController,
+                        locationViewModel  = locationViewModel,
+                        navigateToHomeFlow = navigateToHomeFlow
                     )
                 }
             }
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(currentIntent: Intent?) {
+        if (currentIntent?.action == WeatherAlertWorker.ACTION_FROM_NOTIFICATION) {
+            isLaunchedFromNotification = true
+            AppLogger.logVmEvent("MainActivity", "Launched from notification -> forcing Home screen")
+            AlarmSoundPlayer.stop() // Stop background ringtone
+            _navigateToHome.tryEmit(Unit)
+            currentIntent.action = null // Clear so it doesn't trigger again on rotation
+        }
+    }
 
     private fun observePermissionRequests() {
         lifecycleScope.launch {
@@ -236,9 +278,18 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun WeatherBugApp(
-    navController:     NavHostController,
-    locationViewModel: LocationViewModel
+    navController:      NavHostController,
+    locationViewModel:  LocationViewModel,
+    navigateToHomeFlow: SharedFlow<Unit>
 ) {
+    LaunchedEffect(Unit) {
+        navigateToHomeFlow.collect {
+            navController.navigate(Screen.Home.route) {
+                popUpTo(Screen.Home.route) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
     val bottomNavScreens = listOf(
         Screen.Home.route,
         Screen.Favourites.route,
@@ -251,6 +302,7 @@ fun WeatherBugApp(
     val showBottomNav     = currentRoute in bottomNavScreens
 
     Scaffold(
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
         bottomBar = {
             if (showBottomNav) {
                 WeatherBugBottomNav(
@@ -260,11 +312,14 @@ fun WeatherBugApp(
             }
         }
     ) { innerPadding ->
-        NavGraph(
-            navController     = navController,
-            modifier          = Modifier.padding(innerPadding),
-            locationViewModel = locationViewModel
-        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            com.example.weatherbug.ui.components.AnimatedGradientBackground()
+            NavGraph(
+                navController     = navController,
+                modifier          = Modifier.padding(innerPadding),
+                locationViewModel = locationViewModel
+            )
+        }
     }
 }
 
@@ -308,7 +363,9 @@ fun WeatherBugBottomNav(
         )
     )
 
-    NavigationBar {
+    NavigationBar(
+        containerColor = androidx.compose.ui.graphics.Color.Transparent
+    ) {
         items.forEach { item ->
             val isSelected = currentRoute == item.route
             NavigationBarItem(

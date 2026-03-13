@@ -136,9 +136,8 @@ private fun FavouriteCard(
         onClick   = onClick,
         modifier  = modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors    = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
         )
     ) {
         Row(
@@ -172,6 +171,7 @@ private fun FavouriteCard(
                     Text(
                         text       = item.cityName,
                         style      = MaterialTheme.typography.titleMedium,
+                        color      = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.SemiBold,
                         maxLines   = 1,
                         overflow   = TextOverflow.Ellipsis

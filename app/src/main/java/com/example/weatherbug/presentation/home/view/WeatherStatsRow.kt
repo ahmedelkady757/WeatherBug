@@ -72,7 +72,7 @@ internal fun WeatherStatsRow(
             modifier = Modifier.weight(1f).height(STAT_CARD_HEIGHT_DP.dp),
             icon     = pressureIcon,
             label    = stringResource(R.string.home_pressure),
-            value    = "${data.main.pressure} hPa"
+            value    = "${data.main.pressure} ${stringResource( R.string.pressure_unit_home)}"
         )
         StatCard(
             modifier = Modifier.weight(1f).height(STAT_CARD_HEIGHT_DP.dp),
@@ -93,9 +93,8 @@ private fun StatCard(
     Card(
         modifier  = modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors    = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
         )
     ) {
         Column(

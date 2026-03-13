@@ -37,17 +37,18 @@ internal fun DailyForecastCard(
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors    = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text       = stringResource(R.string.home_daily_forecast),
                 style      = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+                fontWeight = FontWeight.SemiBold,
+                color     = MaterialTheme.colorScheme.onSurfaceVariant,
+
+                )
             Spacer(modifier = Modifier.height(12.dp))
             items.forEachIndexed { index, item ->
                 DailyItem(item = item, appLang = appLang)
@@ -78,6 +79,8 @@ private fun DailyItem(
         Text(
             text       = dayName,
             style      = MaterialTheme.typography.bodyMedium,
+            color     = MaterialTheme.colorScheme.onSurfaceVariant,
+
             fontWeight = FontWeight.Medium,
             modifier   = Modifier.width(80.dp)
         )
@@ -107,6 +110,8 @@ private fun DailyItem(
         Text(
             text       = "${item.temp.max.roundToInt()}°",
             style      = MaterialTheme.typography.bodyMedium,
+            color     = MaterialTheme.colorScheme.onSurfaceVariant,
+
             fontWeight = FontWeight.SemiBold,
             modifier   = Modifier.width(36.dp)
         )

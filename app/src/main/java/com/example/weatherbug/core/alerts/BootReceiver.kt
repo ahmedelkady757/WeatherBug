@@ -25,10 +25,8 @@ class BootReceiver : BroadcastReceiver(), KoinComponent {
             val now    = System.currentTimeMillis()
             alerts.forEach { alert ->
                 if (alert.startTime > now) {
-                    // Only reschedule future alerts
                     scheduler.schedule(alert)
                 } else {
-                    // Past alert — clean it up
                     repo.deleteAlert(alert)
                 }
             }

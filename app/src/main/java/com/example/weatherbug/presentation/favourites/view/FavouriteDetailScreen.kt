@@ -50,6 +50,7 @@ fun FavouriteDetailScreen(
     else
         Constants.WIND_METRIC_IMPERIAL_LABEL
     Scaffold(
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
         topBar = {
             TopAppBar(
                 title = {
@@ -76,7 +77,7 @@ fun FavouriteDetailScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = androidx.compose.ui.graphics.Color.Transparent
                 )
             )
         }
