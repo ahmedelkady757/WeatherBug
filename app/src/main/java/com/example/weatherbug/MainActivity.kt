@@ -62,6 +62,7 @@ import org.koin.compose.koinInject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.runtime.LaunchedEffect
 import com.example.weatherbug.core.alerts.AlarmSoundPlayer
 import com.example.weatherbug.core.alerts.WeatherAlertWorker
@@ -76,11 +77,7 @@ class MainActivity : ComponentActivity() {
     
     val locationViewModel: LocationViewModel by viewModel()
 
-    private val notificationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        AppLogger.logVmEvent("MainActivity", "POST_NOTIFICATIONS granted=$granted")
-    }
+
 
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -104,7 +101,6 @@ class MainActivity : ComponentActivity() {
         AppLogger.logVmEvent("MainActivity", "onCreate")
 
         observePermissionRequests()
-        requestNotificationPermissionIfNeeded()
         checkExactAlarmPermission()
         handleIntent(intent)
 
@@ -167,7 +163,8 @@ class MainActivity : ComponentActivity() {
 
             CompositionLocalProvider(
                 LocalLayoutDirection provides layoutDirection,
-                LocalContext        provides localizedContext
+                LocalContext        provides localizedContext,
+                LocalActivityResultRegistryOwner provides this@MainActivity
             ) {
                 WeatherBugTheme(darkTheme = darkTheme) {
                     val navController = rememberNavController()
@@ -243,14 +240,7 @@ class MainActivity : ComponentActivity() {
     }
 
 
-    private fun requestNotificationPermissionIfNeeded() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-    }
+
 
 
     private fun checkExactAlarmPermission() {
