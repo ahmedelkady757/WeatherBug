@@ -35,6 +35,9 @@ class FavouritesViewModel(private val repo: WeatherRepo) : ViewModel() {
     private val _activeDialog = MutableStateFlow<FavouritesDialog>(FavouritesDialog.None)
     val activeDialog: StateFlow<FavouritesDialog> = _activeDialog.asStateFlow()
 
+    private val _isAddingFavourite = MutableStateFlow(false)
+    val isAddingFavourite: StateFlow<Boolean> = _isAddingFavourite.asStateFlow()
+
 
     fun requestDeleteOne(item: FavouriteWeatherItem) {
         AppLogger.logVmEvent("FavouritesViewModel", "requestDeleteOne id=${item.id}")
@@ -66,5 +69,17 @@ class FavouritesViewModel(private val repo: WeatherRepo) : ViewModel() {
             repo.deleteAllFavourites()
             _activeDialog.value = FavouritesDialog.None
         }
+    }
+
+    fun requestAddFavourite(onNavigate: () -> Unit) {
+        viewModelScope.launch {
+            _isAddingFavourite.value = true
+            kotlinx.coroutines.delay(100)
+            onNavigate()
+        }
+    }
+    
+    fun resetAddingState() {
+        _isAddingFavourite.value = false
     }
 }
