@@ -238,7 +238,7 @@ private fun SwipeToDeleteAlertCard(
 
 @Composable
 private fun AlertItemCard(alert: AlertItem) {
-    val fmt = SimpleDateFormat("dd MMM yyyy  HH:mm", Locale.getDefault())
+    val fmt = SimpleDateFormat("HH:mm", Locale.getDefault())
     val isAlarm = alert.alarmType == AlertItem.ALARM_TYPE_ALARM
 
     Card(
@@ -293,12 +293,6 @@ private fun AlertItemCard(alert: AlertItem) {
                     text  = fmt.format(alert.startTime),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text  = stringResource(R.string.alerts_until, fmt.format(alert.endTime)),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline,
-                    fontSize = 12.sp
                 )
             }
         }

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 
 sealed class AlertsDialog {
@@ -49,6 +50,19 @@ class AlertsViewModel(
         weatherCondition: String
     ) {
         viewModelScope.launch {
+            val newCal = Calendar.getInstance().apply { timeInMillis = startTime }
+            val newHour = newCal.get(Calendar.HOUR_OF_DAY)
+            val newMin  = newCal.get(Calendar.MINUTE)
+
+            // Prevent two alerts with the exact same time
+            alerts.value.find {
+                val cal = Calendar.getInstance().apply { timeInMillis = it.startTime }
+                cal.get(Calendar.HOUR_OF_DAY) == newHour && cal.get(Calendar.MINUTE) == newMin
+            }?.let { existing ->
+                scheduler.cancel(existing.id, existing.alarmType, existing.weatherCondition)
+                repo.deleteAlert(existing)
+            }
+
             val draft = AlertItem(
                 startTime        = startTime,
                 endTime          = endTime,

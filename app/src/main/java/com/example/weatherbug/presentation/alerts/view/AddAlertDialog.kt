@@ -10,15 +10,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,8 +38,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-private enum class PickerTarget { START, END }
-private enum class PickerStep  { DATE, TIME, NONE }
+private enum class PickerStep  { TIME, NONE }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,39 +46,20 @@ fun AddAlertDialog(
     onConfirm: (startTime: Long, endTime: Long, alarmType: String, weatherCondition: String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val fmt = SimpleDateFormat("dd MMM yyyy  HH:mm", Locale.getDefault())
+    val fmt = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     var startTime        by remember { mutableLongStateOf(System.currentTimeMillis() + 60_000L) }
-    var endTime          by remember { mutableLongStateOf(System.currentTimeMillis() + 3_600_000L) }
     var alarmType        by remember { mutableStateOf(AlertItem.ALARM_TYPE_NOTIFICATION) }
     var weatherCondition by remember { mutableStateOf(AlertItem.CONDITION_ANY) }
 
-    var pickerTarget by remember { mutableStateOf(PickerTarget.START) }
     var pickerStep   by remember { mutableStateOf(PickerStep.NONE) }
 
-    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = startTime)
     val initialCal      = Calendar.getInstance()
     val timePickerState = rememberTimePickerState(
         initialHour   = initialCal.get(Calendar.HOUR_OF_DAY),
         initialMinute = initialCal.get(Calendar.MINUTE),
         is24Hour      = true
     )
-
-    if (pickerStep == PickerStep.DATE) {
-        DatePickerDialog(
-            onDismissRequest = { pickerStep = PickerStep.NONE },
-            confirmButton = {
-                TextButton(onClick = { pickerStep = PickerStep.TIME }) {
-                    Text(stringResource(android.R.string.ok))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { pickerStep = PickerStep.NONE }) {
-                    Text(stringResource(android.R.string.cancel))
-                }
-            }
-        ) { DatePicker(state = datePickerState) }
-    }
 
     if (pickerStep == PickerStep.TIME) {
         Dialog(onDismissRequest = { pickerStep = PickerStep.NONE }) {
@@ -95,9 +72,7 @@ fun AddAlertDialog(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text       = if (pickerTarget == PickerTarget.START)
-                                         stringResource(R.string.alerts_dialog_start)
-                                     else stringResource(R.string.alerts_dialog_end),
+                        text       = stringResource(R.string.alerts_dialog_start),
                         style      = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -112,17 +87,16 @@ fun AddAlertDialog(
                             Text(stringResource(android.R.string.cancel))
                         }
                         TextButton(onClick = {
-                            val selectedDateMs = datePickerState.selectedDateMillis
-                                ?: System.currentTimeMillis()
                             val cal = Calendar.getInstance().apply {
-                                timeInMillis = selectedDateMs
                                 set(Calendar.HOUR_OF_DAY, timePickerState.hour)
                                 set(Calendar.MINUTE,      timePickerState.minute)
                                 set(Calendar.SECOND,      0)
                                 set(Calendar.MILLISECOND, 0)
                             }
-                            if (pickerTarget == PickerTarget.START) startTime = cal.timeInMillis
-                            else                                     endTime   = cal.timeInMillis
+                            if (cal.timeInMillis < System.currentTimeMillis()) {
+                                cal.add(Calendar.DAY_OF_YEAR, 1)
+                            }
+                            startTime = cal.timeInMillis
                             pickerStep = PickerStep.NONE
                         }) {
                             Text(stringResource(android.R.string.ok))
@@ -173,24 +147,14 @@ fun AddAlertDialog(
                 }
 
                 Text(
-                    text  = stringResource(R.string.alerts_dialog_start),
+                    text  = stringResource(R.string.alerts_dialog_start), // "Time" is better represented with the same string since it meant "Start" previously
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
                 TextButton(
-                    onClick  = { pickerTarget = PickerTarget.START; pickerStep = PickerStep.DATE },
+                    onClick  = { pickerStep = PickerStep.TIME },
                     modifier = Modifier.fillMaxWidth()
                 ) { Text(fmt.format(startTime)) }
-
-                Text(
-                    text  = stringResource(R.string.alerts_dialog_end),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                TextButton(
-                    onClick  = { pickerTarget = PickerTarget.END; pickerStep = PickerStep.DATE },
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text(fmt.format(endTime)) }
 
                 Text(
                     text  = stringResource(R.string.alerts_dialog_type),
@@ -213,8 +177,8 @@ fun AddAlertDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onConfirm(startTime, endTime, alarmType, weatherCondition) },
-                enabled = startTime > System.currentTimeMillis() && endTime > startTime
+                onClick = { onConfirm(startTime, startTime, alarmType, weatherCondition) },
+                enabled = true
             ) { Text(stringResource(R.string.alerts_dialog_confirm)) }
         },
         dismissButton = {
