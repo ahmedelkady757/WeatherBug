@@ -1,7 +1,7 @@
-package com.example.weatherbug.location
+package com.example.weatherbug.core.location
 
 import android.annotation.SuppressLint
-import com.example.weatherbug.util.AppLogger
+import com.example.weatherbug.core.util.AppLogger
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource

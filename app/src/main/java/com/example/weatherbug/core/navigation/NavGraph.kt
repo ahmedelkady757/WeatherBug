@@ -1,10 +1,11 @@
-package com.example.weatherbug.navigation
+package com.example.weatherbug.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.weatherbug.presentation.alerts.view.AlertsScreen
 import com.example.weatherbug.presentation.favourites.view.FavouriteDetailScreen
 import com.example.weatherbug.presentation.favourites.view.FavouritesScreen
 import com.example.weatherbug.presentation.home.view.HomeScreen
@@ -12,7 +13,7 @@ import com.example.weatherbug.presentation.location.LocationViewModel
 import com.example.weatherbug.presentation.map.view.MapPickerScreen
 import com.example.weatherbug.presentation.settings.view.SettingsScreen
 import com.example.weatherbug.presentation.splash.view.SplashScreen
-import com.example.weatherbug.util.AppLogger
+import com.example.weatherbug.core.util.AppLogger
 
 
 @Composable
@@ -69,7 +70,7 @@ fun NavGraph(
 
         composable(route = Screen.Alerts.route) {
             AppLogger.logNavigation("NavGraph", "Alerts")
-            PlaceholderScreen(name = "Alerts")
+            AlertsScreen()
         }
 
         composable(route = Screen.Settings.route) {

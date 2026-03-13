@@ -1,4 +1,4 @@
-package com.example.weatherbug.util
+package com.example.weatherbug.core.util
 
 fun isNoInternetError(message: String?): Boolean {
     if (message.isNullOrBlank()) return false

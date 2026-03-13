@@ -1,4 +1,4 @@
-package com.example.weatherbug.util
+package com.example.weatherbug.core.util
 
 
 import android.Manifest
@@ -20,7 +20,7 @@ class NetworkConnectivityObserver(context: Context) {
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
 
-    fun observe(): Flow<Boolean> = callbackFlow @androidx.annotation.RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE) {
+    fun observe(): Flow<Boolean> = callbackFlow @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE) {
 
         trySend(isCurrentlyConnected())
 

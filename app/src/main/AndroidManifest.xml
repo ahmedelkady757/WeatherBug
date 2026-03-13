@@ -48,12 +48,17 @@
 
         <!-- AlarmReceiver: receives broadcast when AlarmManager fires -->
         <receiver
-            android:name=".alerts.AlarmReceiver"
+            android:name=".core.alerts.AlarmReceiver"
+            android:exported="false" />
+
+        <!-- StopAlarmReceiver: handles Stop action from alarm notification -->
+        <receiver
+            android:name=".core.alerts.StopAlarmReceiver"
             android:exported="false" />
 
         <!-- BootReceiver: reschedules all active alarms after reboot -->
         <receiver
-            android:name=".alerts.BootReceiver"
+            android:name=".core.alerts.BootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

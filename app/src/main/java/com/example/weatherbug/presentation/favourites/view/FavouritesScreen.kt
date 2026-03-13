@@ -38,7 +38,7 @@ import com.example.weatherbug.R
 import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.presentation.favourites.viewmodel.FavouritesDialog
 import com.example.weatherbug.presentation.favourites.viewmodel.FavouritesViewModel
-import com.example.weatherbug.util.Constants
+import com.example.weatherbug.core.util.Constants
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 

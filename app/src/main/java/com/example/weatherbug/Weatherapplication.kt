@@ -2,28 +2,30 @@ package com.example.weatherbug
 
 import android.app.Application
 import androidx.work.Configuration
-import com.example.weatherbug.di.appModule
-import com.example.weatherbug.di.networkModule
-import com.example.weatherbug.di.repoModule
-import com.example.weatherbug.util.AppLogger
+import com.example.weatherbug.core.di.appModule
+import com.example.weatherbug.core.di.networkModule
+import com.example.weatherbug.core.di.repoModule
+import com.example.weatherbug.core.util.AppLogger
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.workmanager.factory.KoinWorkerFactory
 import org.koin.androidx.workmanager.koin.workManagerFactory
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 
 
-class WeatherApplication : Application(), Configuration.Provider, KoinComponent {
 
-    private val workerFactory: KoinWorkerFactory by inject()
+class WeatherApplication : Application(), Configuration.Provider {
 
     override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
+        get() {
+
+            val factory = GlobalContext.get().get<KoinWorkerFactory>()
+            return Configuration.Builder()
+                .setWorkerFactory(factory)
+                .build()
+        }
 
     override fun onCreate() {
         super.onCreate()

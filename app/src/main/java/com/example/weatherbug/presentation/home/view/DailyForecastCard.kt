@@ -25,8 +25,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.weatherbug.R
 import com.example.weatherbug.data.models.DailyForecastResponse
-import com.example.weatherbug.util.DateFormatter
-import com.example.weatherbug.util.WeatherIconMapper
+import com.example.weatherbug.core.util.DateFormatter
+import com.example.weatherbug.core.util.WeatherIconMapper
 import kotlin.math.roundToInt
 
 @Composable

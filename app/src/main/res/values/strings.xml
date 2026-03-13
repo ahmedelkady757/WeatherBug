@@ -90,10 +90,21 @@
     <string name="alerts_dialog_type">Alert Type</string>
     <string name="alerts_dialog_confirm">Schedule</string>
     <string name="alerts_dialog_cancel">Cancel</string>
+    <string name="alerts_dialog_condition">Weather Condition</string>
     <string name="alerts_until">Until %1$s</string>
+
+    <!-- Weather conditions -->
+    <string name="condition_any">Any Weather</string>
+    <string name="condition_rain">🌧 Rain</string>
+    <string name="condition_snow">❄️ Snow</string>
+    <string name="condition_thunderstorm">⛈ Thunderstorm</string>
+    <string name="condition_clear">☀️ Clear</string>
+    <string name="condition_clouds">☁️ Cloudy</string>
+    <string name="condition_fog">🌫 Fog / Mist</string>
 
     <string name="alert_channel_name">Weather Alerts</string>
     <string name="alert_channel_desc">Weather condition alerts at your scheduled time</string>
+    <string name="alert_stop_alarm">Stop Alarm</string>
 
     <string name="alert_notification_title">&#x2601; Weather Alert &#x2014; %1$s</string>
     <string name="alert_notification_body">&#x1F321; %1$d%2$s (Feels %3$d%4$s) &#x2022; %5$s\n&#x1F4A7; Humidity: %6$d%% &#x2022; &#x1F4A8; Wind: %7$d %8$s</string>

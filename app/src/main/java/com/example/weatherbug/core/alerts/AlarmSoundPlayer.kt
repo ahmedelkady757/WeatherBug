@@ -1,4 +1,4 @@
-package com.example.weatherbug.alerts
+package com.example.weatherbug.core.alerts
 
 import android.content.Context
 import android.media.Ringtone

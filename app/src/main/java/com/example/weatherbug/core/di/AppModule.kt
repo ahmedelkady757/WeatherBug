@@ -1,4 +1,4 @@
-package com.example.weatherbug.di
+package com.example.weatherbug.core.di
 
 import androidx.room.Room
 import com.example.weatherbug.data.datasource.local.AppDataStore
@@ -11,7 +11,7 @@ import com.example.weatherbug.data.db.WeatherBugDatabase
 import com.example.weatherbug.data.network.RetrofitClient
 import com.example.weatherbug.data.repo.WeatherRepo
 import com.example.weatherbug.data.repo.WeatherRepoImpl
-import com.example.weatherbug.alerts.AlarmScheduler
+import com.example.weatherbug.core.alerts.AlarmScheduler
 import com.example.weatherbug.presentation.alerts.viewmodel.AlertsViewModel
 import com.example.weatherbug.presentation.favourites.viewmodel.FavouriteDetailViewModel
 import com.example.weatherbug.presentation.favourites.viewmodel.FavouritesViewModel
@@ -20,9 +20,9 @@ import com.example.weatherbug.presentation.location.LocationViewModel
 import com.example.weatherbug.presentation.map.viewmodel.MapPickerViewModel
 import com.example.weatherbug.presentation.settings.viewmodel.SettingsViewModel
 import com.example.weatherbug.presentation.splash.viewmodel.SplashViewModel
-import com.example.weatherbug.util.Constants
-import com.example.weatherbug.location.FusedLocationProvider
-import com.example.weatherbug.location.LocationProvider
+import com.example.weatherbug.core.util.Constants
+import com.example.weatherbug.core.location.FusedLocationProvider
+import com.example.weatherbug.core.location.LocationProvider
 import com.google.android.gms.location.LocationServices
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -39,7 +39,9 @@ val appModule = module {
             androidContext(),
             WeatherBugDatabase::class.java,
             Constants.DB_NAME
-        ).build()
+        )
+        .fallbackToDestructiveMigration()
+        .build()
     }
 
     single { get<WeatherBugDatabase>().weatherBugDao() }
@@ -88,7 +90,7 @@ val repoModule = module {
 
 
     viewModel {
-        SplashViewModel(appDataStore = get())
+        SplashViewModel()
     }
 
     viewModel {

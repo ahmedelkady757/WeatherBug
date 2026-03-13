@@ -3,9 +3,9 @@ package com.example.weatherbug.presentation.location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherbug.data.datasource.local.IAppDataStore
-import com.example.weatherbug.location.LocationProvider
-import com.example.weatherbug.util.AppLogger
-import com.example.weatherbug.util.Constants
+import com.example.weatherbug.core.location.LocationProvider
+import com.example.weatherbug.core.util.AppLogger
+import com.example.weatherbug.core.util.Constants
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow

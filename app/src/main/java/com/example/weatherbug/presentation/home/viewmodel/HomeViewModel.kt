@@ -7,9 +7,9 @@ import com.example.weatherbug.data.models.DailyForecastResponse
 import com.example.weatherbug.data.models.HourlyForecastResponse
 import com.example.weatherbug.data.models.WeatherResponse
 import com.example.weatherbug.data.repo.WeatherRepo
-import com.example.weatherbug.util.AppLogger
-import com.example.weatherbug.util.Constants
-import com.example.weatherbug.util.ResponseState
+import com.example.weatherbug.core.util.AppLogger
+import com.example.weatherbug.core.util.Constants
+import com.example.weatherbug.core.util.ResponseState
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

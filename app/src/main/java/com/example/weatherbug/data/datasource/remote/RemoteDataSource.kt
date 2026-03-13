@@ -6,7 +6,7 @@ import com.example.weatherbug.data.models.GeocodingItem
 import com.example.weatherbug.data.models.HourlyForecastResponse
 import com.example.weatherbug.data.models.WeatherResponse
 import com.example.weatherbug.data.network.WeatherApiService
-import com.example.weatherbug.util.AppLogger
+import com.example.weatherbug.core.util.AppLogger
 
 
 class RemoteDataSource(

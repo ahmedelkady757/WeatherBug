@@ -1,4 +1,4 @@
-package com.example.weatherbug.util
+package com.example.weatherbug.core.util
 
 sealed class ResponseState<out T> {
     data object Loading : ResponseState<Nothing>()

@@ -1,4 +1,4 @@
-package com.example.weatherbug.location
+package com.example.weatherbug.core.location
 
 
 interface LocationProvider {

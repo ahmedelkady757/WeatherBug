@@ -8,7 +8,7 @@ import com.example.weatherbug.data.models.FavouriteWeatherItem
 
 @Database(
     entities     = [FavouriteWeatherItem::class, AlertItem::class],
-    version      = 1,
+    version      = 2,          // bumped: added weatherCondition to AlertItem
     exportSchema = false
 )
 abstract class WeatherBugDatabase : RoomDatabase() {

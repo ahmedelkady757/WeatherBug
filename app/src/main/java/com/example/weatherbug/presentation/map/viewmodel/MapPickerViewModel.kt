@@ -6,10 +6,10 @@ import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.data.models.FavouriteWeatherItem
 import com.example.weatherbug.data.models.GeocodingItem
 import com.example.weatherbug.data.repo.WeatherRepo
-import com.example.weatherbug.navigation.Screen
-import com.example.weatherbug.util.AppLogger
-import com.example.weatherbug.util.Constants
-import com.example.weatherbug.util.ResponseState
+import com.example.weatherbug.core.navigation.Screen
+import com.example.weatherbug.core.util.AppLogger
+import com.example.weatherbug.core.util.Constants
+import com.example.weatherbug.core.util.ResponseState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

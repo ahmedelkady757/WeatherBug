@@ -4,7 +4,7 @@ import com.example.weatherbug.data.models.DailyForecastResponse
 import com.example.weatherbug.data.models.GeocodingItem
 import com.example.weatherbug.data.models.HourlyForecastResponse
 import com.example.weatherbug.data.models.WeatherResponse
-import com.example.weatherbug.util.Constants
+import com.example.weatherbug.core.util.Constants
 import retrofit2.http.GET
 import retrofit2.http.Query
 

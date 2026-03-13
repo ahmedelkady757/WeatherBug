@@ -2,7 +2,7 @@ package com.example.weatherbug.presentation.alerts.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weatherbug.alerts.AlarmScheduler
+import com.example.weatherbug.core.alerts.AlarmScheduler
 import com.example.weatherbug.data.models.AlertItem
 import com.example.weatherbug.data.repo.WeatherRepo
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,14 +13,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
-
 sealed class AlertsDialog {
     data object None                           : AlertsDialog()
     data object Add                            : AlertsDialog()
     data class  DeleteOne(val item: AlertItem) : AlertsDialog()
     data object DeleteAll                      : AlertsDialog()
 }
-
 
 
 class AlertsViewModel(
@@ -39,19 +37,24 @@ class AlertsViewModel(
     private val _dialog = MutableStateFlow<AlertsDialog>(AlertsDialog.None)
     val dialog: StateFlow<AlertsDialog> = _dialog.asStateFlow()
 
+    fun requestAdd()                        { _dialog.value = AlertsDialog.Add }
+    fun requestDeleteOne(item: AlertItem)   { _dialog.value = AlertsDialog.DeleteOne(item) }
+    fun requestDeleteAll()                  { _dialog.value = AlertsDialog.DeleteAll }
+    fun dismissDialog()                     { _dialog.value = AlertsDialog.None }
 
-
-    fun requestAdd()                    { _dialog.value = AlertsDialog.Add }
-    fun requestDeleteOne(item: AlertItem) { _dialog.value = AlertsDialog.DeleteOne(item) }
-    fun requestDeleteAll()              { _dialog.value = AlertsDialog.DeleteAll }
-    fun dismissDialog()                 { _dialog.value = AlertsDialog.None }
-
-
-
-
-    fun confirmAdd(startTime: Long, endTime: Long, alarmType: String) {
+    fun confirmAdd(
+        startTime:        Long,
+        endTime:          Long,
+        alarmType:        String,
+        weatherCondition: String
+    ) {
         viewModelScope.launch {
-            val draft     = AlertItem(startTime = startTime, endTime = endTime, alarmType = alarmType)
+            val draft = AlertItem(
+                startTime        = startTime,
+                endTime          = endTime,
+                alarmType        = alarmType,
+                weatherCondition = weatherCondition
+            )
             val insertedId = repo.insertAlert(draft).toInt()
             val saved      = draft.copy(id = insertedId)
             scheduler.schedule(saved)
@@ -62,7 +65,7 @@ class AlertsViewModel(
     fun confirmDeleteOne() {
         val state = _dialog.value as? AlertsDialog.DeleteOne ?: return
         viewModelScope.launch {
-            scheduler.cancel(state.item.id, state.item.alarmType)
+            scheduler.cancel(state.item.id, state.item.alarmType, state.item.weatherCondition)
             repo.deleteAlert(state.item)
             _dialog.value = AlertsDialog.None
         }
@@ -70,9 +73,8 @@ class AlertsViewModel(
 
     fun confirmDeleteAll() {
         viewModelScope.launch {
-            // Cancel each alarm individually before wiping the DB
             alerts.value.forEach { alert ->
-                scheduler.cancel(alert.id, alert.alarmType)
+                scheduler.cancel(alert.id, alert.alarmType, alert.weatherCondition)
             }
             repo.deleteAllAlerts()
             _dialog.value = AlertsDialog.None

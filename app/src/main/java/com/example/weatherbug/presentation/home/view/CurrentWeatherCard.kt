@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherbug.R
 import com.example.weatherbug.data.models.WeatherResponse
-import com.example.weatherbug.util.DateFormatter
-import com.example.weatherbug.util.WeatherIconMapper
+import com.example.weatherbug.core.util.DateFormatter
+import com.example.weatherbug.core.util.WeatherIconMapper
 import kotlin.math.roundToInt
 
 @Composable
