@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -26,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -63,6 +65,11 @@ fun FavouritesScreen(
         else                    -> Constants.SYMBOL_CELSIUS
     }
 
+    val isAddingFavourite by viewModel.isAddingFavourite.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.resetAddingState()
+    }
 
     when (val dialog = activeDialog) {
         is FavouritesDialog.DeleteOne -> {
@@ -111,14 +118,28 @@ fun FavouritesScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick        = onAddFavourite,
+                onClick        = {
+                    if (!isAddingFavourite) {
+                        viewModel.requestAddFavourite {
+                            onAddFavourite()
+                        }
+                    }
+                },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor   = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(
-                    imageVector        = Icons.Filled.Add,
-                    contentDescription = stringResource(R.string.favourites_add)
-                )
+                if (isAddingFavourite) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        imageVector        = Icons.Filled.Add,
+                        contentDescription = stringResource(R.string.favourites_add)
+                    )
+                }
             }
         }
     ) { innerPadding ->
