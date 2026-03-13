@@ -58,6 +58,7 @@ import com.example.weatherbug.data.models.AlertItem
 import com.example.weatherbug.presentation.alerts.viewmodel.AlertsDialog
 import com.example.weatherbug.presentation.alerts.viewmodel.AlertsViewModel
 import org.koin.androidx.compose.koinViewModel
+import androidx.compose.material3.Switch
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import android.Manifest
@@ -146,7 +147,8 @@ fun AlertsScreen(modifier: Modifier = Modifier) {
                     items(alerts, key = { it.id }) { alert ->
                         SwipeToDeleteAlertCard(
                             alert    = alert,
-                            onDelete = { viewModel.requestDeleteOne(alert) }
+                            onDelete = { viewModel.requestDeleteOne(alert) },
+                            onToggleActive = { isActive -> viewModel.toggleAlertActive(alert, isActive) }
                         )
                     }
                     item { Spacer(Modifier.height(80.dp)) }
@@ -212,7 +214,8 @@ fun AlertsScreen(modifier: Modifier = Modifier) {
 @Composable
 private fun SwipeToDeleteAlertCard(
     alert:    AlertItem,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onToggleActive: (Boolean) -> Unit
 ) {
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
@@ -258,14 +261,14 @@ private fun SwipeToDeleteAlertCard(
             }
         }
     ) {
-        AlertItemCard(alert = alert)
+        AlertItemCard(alert = alert, onToggleActive = onToggleActive)
     }
 }
 
 
 
 @Composable
-private fun AlertItemCard(alert: AlertItem) {
+private fun AlertItemCard(alert: AlertItem, onToggleActive: (Boolean) -> Unit) {
     val fmt = SimpleDateFormat("HH:mm", Locale.getDefault())
     val isAlarm = alert.alarmType == AlertItem.ALARM_TYPE_ALARM
 
@@ -318,11 +321,18 @@ private fun AlertItemCard(alert: AlertItem) {
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text  = fmt.format(alert.startTime),
+                    text  = "${fmt.format(alert.startTime)} - ${fmt.format(alert.endTime)}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+
+            Spacer(Modifier.width(14.dp))
+            
+            Switch(
+                checked = alert.isActive,
+                onCheckedChange = onToggleActive
+            )
         }
     }
 }

@@ -92,6 +92,8 @@
     <string name="alerts_dialog_confirm">Schedule</string>
     <string name="alerts_dialog_cancel">Cancel</string>
     <string name="alerts_dialog_condition">Weather Condition</string>
+    <string name="alerts_dialog_error_past_time">Must be in future</string>
+    <string name="alerts_dialog_error_end_before_start">Must be after start</string>
     <string name="alerts_until">Until %1$s</string>
 
     <!-- Weather conditions -->

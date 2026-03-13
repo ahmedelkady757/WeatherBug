@@ -38,74 +38,82 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-private enum class PickerStep  { TIME, NONE }
+    private enum class PickerStep  { START_TIME, END_TIME, NONE }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddAlertDialog(
-    onConfirm: (startTime: Long, endTime: Long, alarmType: String, weatherCondition: String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val fmt = SimpleDateFormat("HH:mm", Locale.getDefault())
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun AddAlertDialog(
+        onConfirm: (startTime: Long, endTime: Long, alarmType: String, weatherCondition: String) -> Unit,
+        onDismiss: () -> Unit
+    ) {
+        val fmt = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-    var startTime        by remember { mutableLongStateOf(System.currentTimeMillis() + 60_000L) }
-    var alarmType        by remember { mutableStateOf(AlertItem.ALARM_TYPE_NOTIFICATION) }
-    var weatherCondition by remember { mutableStateOf(AlertItem.CONDITION_ANY) }
+        var startTime        by remember { mutableLongStateOf(System.currentTimeMillis() + 60_000L) }
+        var endTime          by remember { mutableLongStateOf(System.currentTimeMillis() + 3600_000L) }
+        var alarmType        by remember { mutableStateOf(AlertItem.ALARM_TYPE_NOTIFICATION) }
+        var weatherCondition by remember { mutableStateOf(AlertItem.CONDITION_ANY) }
 
-    var pickerStep   by remember { mutableStateOf(PickerStep.NONE) }
+        var pickerStep   by remember { mutableStateOf(PickerStep.NONE) }
 
-    val initialCal      = Calendar.getInstance()
-    val timePickerState = rememberTimePickerState(
-        initialHour   = initialCal.get(Calendar.HOUR_OF_DAY),
-        initialMinute = initialCal.get(Calendar.MINUTE),
-        is24Hour      = true
-    )
+        val isStartTimeValid = startTime >= System.currentTimeMillis() - 60_000L
+        val isEndTimeValid   = endTime > startTime
+        val isFormValid      = isStartTimeValid && isEndTimeValid
 
-    if (pickerStep == PickerStep.TIME) {
-        Dialog(onDismissRequest = { pickerStep = PickerStep.NONE }) {
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surface
-            ) {
-                Column(
-                    modifier            = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+        if (pickerStep != PickerStep.NONE) {
+            val isStart = pickerStep == PickerStep.START_TIME
+            val initialTime = if (isStart) startTime else endTime
+            val initialCal = Calendar.getInstance().apply { timeInMillis = initialTime }
+
+            val timePickerState = rememberTimePickerState(
+                initialHour   = initialCal.get(Calendar.HOUR_OF_DAY),
+                initialMinute = initialCal.get(Calendar.MINUTE),
+                is24Hour      = true
+            )
+            Dialog(onDismissRequest = { pickerStep = PickerStep.NONE }) {
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surface
                 ) {
-                    Text(
-                        text       = stringResource(R.string.alerts_dialog_start),
-                        style      = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    TimePicker(state = timePickerState)
-                    Spacer(Modifier.height(16.dp))
-                    Row(
-                        modifier              = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                    Column(
+                        modifier            = Modifier.padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        TextButton(onClick = { pickerStep = PickerStep.NONE }) {
-                            Text(stringResource(android.R.string.cancel))
-                        }
-                        TextButton(onClick = {
-                            val cal = Calendar.getInstance().apply {
-                                set(Calendar.HOUR_OF_DAY, timePickerState.hour)
-                                set(Calendar.MINUTE,      timePickerState.minute)
-                                set(Calendar.SECOND,      0)
-                                set(Calendar.MILLISECOND, 0)
+                         Text(
+                            text       = stringResource(if (isStart) R.string.alerts_dialog_start else R.string.alerts_dialog_end),
+                            style      = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        TimePicker(state = timePickerState)
+                        Spacer(Modifier.height(16.dp))
+                        Row(
+                            modifier              = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            TextButton(onClick = { pickerStep = PickerStep.NONE }) {
+                                Text(stringResource(android.R.string.cancel))
                             }
-                            if (cal.timeInMillis < System.currentTimeMillis()) {
-                                cal.add(Calendar.DAY_OF_YEAR, 1)
+                            TextButton(onClick = {
+                                val cal = Calendar.getInstance().apply {
+                                    set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+                                    set(Calendar.MINUTE,      timePickerState.minute)
+                                    set(Calendar.SECOND,      0)
+                                    set(Calendar.MILLISECOND, 0)
+                                }
+                                 if (isStart) {
+                                    startTime = cal.timeInMillis
+                                } else {
+                                    endTime = cal.timeInMillis
+                                }
+                                pickerStep = PickerStep.NONE
+                            }) {
+                                Text(stringResource(android.R.string.ok))
                             }
-                            startTime = cal.timeInMillis
-                            pickerStep = PickerStep.NONE
-                        }) {
-                            Text(stringResource(android.R.string.ok))
                         }
                     }
                 }
             }
         }
-    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -146,15 +154,37 @@ fun AddAlertDialog(
                     }
                 }
 
-                Text(
-                    text  = stringResource(R.string.alerts_dialog_start), // "Time" is better represented with the same string since it meant "Start" previously
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                TextButton(
-                    onClick  = { pickerStep = PickerStep.TIME },
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text(fmt.format(startTime)) }
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text  = stringResource(R.string.alerts_dialog_start),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = if (isStartTimeValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                        )
+                        TextButton(
+                            onClick  = { pickerStep = PickerStep.START_TIME },
+                            modifier = Modifier.fillMaxWidth()
+                        ) { Text(fmt.format(startTime), color = if (isStartTimeValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error) }
+                        if (!isStartTimeValid) {
+                            Text(stringResource(R.string.alerts_dialog_error_past_time), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text  = stringResource(R.string.alerts_dialog_end),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = if (isEndTimeValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                        )
+                        TextButton(
+                            onClick  = { pickerStep = PickerStep.END_TIME },
+                            modifier = Modifier.fillMaxWidth()
+                        ) { Text(fmt.format(endTime), color = if (isEndTimeValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error) }
+                        if (!isEndTimeValid) {
+                            Text(stringResource(R.string.alerts_dialog_error_end_before_start), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                }
 
                 Text(
                     text  = stringResource(R.string.alerts_dialog_type),
@@ -177,8 +207,8 @@ fun AddAlertDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onConfirm(startTime, startTime, alarmType, weatherCondition) },
-                enabled = true
+                onClick = { onConfirm(startTime, endTime, alarmType, weatherCondition) },
+                enabled = isFormValid
             ) { Text(stringResource(R.string.alerts_dialog_confirm)) }
         },
         dismissButton = {

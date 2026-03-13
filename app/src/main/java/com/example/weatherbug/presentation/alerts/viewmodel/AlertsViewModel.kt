@@ -94,4 +94,16 @@ class AlertsViewModel(
             _dialog.value = AlertsDialog.None
         }
     }
+
+    fun toggleAlertActive(item: AlertItem, isActive: Boolean) {
+        viewModelScope.launch {
+            repo.setAlertActive(item.id, isActive)
+            val updated = item.copy(isActive = isActive)
+            if (isActive) {
+                scheduler.schedule(updated)
+            } else {
+                scheduler.cancel(updated.id, updated.alarmType, updated.weatherCondition)
+            }
+        }
+    }
 }

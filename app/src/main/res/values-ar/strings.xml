@@ -91,6 +91,8 @@
     <string name="alerts_dialog_confirm">إضافة</string>
     <string name="alerts_dialog_cancel">إلغاء</string>
     <string name="alerts_dialog_condition">حالة الطقس</string>
+    <string name="alerts_dialog_error_past_time">يجب أن يكون في المستقبل</string>
+    <string name="alerts_dialog_error_end_before_start">يجب أن يكون بعد البدء</string>
     <string name="alerts_until">حتى %1$s</string>
 
     <!-- Weather conditions -->
