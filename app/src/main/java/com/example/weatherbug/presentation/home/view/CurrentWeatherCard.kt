@@ -58,15 +58,14 @@ internal fun CurrentWeatherCard(
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.tertiary
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
+                            MaterialTheme.colorScheme.tertiary.copy(alpha = 0.85f)
                         )
                     )
                 )
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // ── Location + date row ───────────────────────────────────────────
             Row(
                 modifier          = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -94,7 +93,6 @@ internal fun CurrentWeatherCard(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // ── Weather icon ──────────────────────────────────────────────────
             condition?.icon?.let { iconCode ->
                 Image(
                     painter            = painterResource(WeatherIconMapper.getIcon(iconCode)),
@@ -105,7 +103,6 @@ internal fun CurrentWeatherCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // ── Temperature ───────────────────────────────────────────────────
             Text(
                 text       = "${data.main.temp.roundToInt()}°",
                 fontSize   = 80.sp,
@@ -114,7 +111,6 @@ internal fun CurrentWeatherCard(
                 lineHeight = 80.sp
             )
 
-            // ── Condition description ─────────────────────────────────────────
             Text(
                 text       = condition?.description?.replaceFirstChar { it.uppercase() } ?: "",
                 style      = MaterialTheme.typography.titleLarge,

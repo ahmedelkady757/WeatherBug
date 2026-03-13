@@ -87,7 +87,6 @@ class WeatherAlertWorker(
                 windVal, windLabel
             )
 
-            // For alarm type: play ringtone BEFORE posting notification
             if (alarmType == AlertItem.ALARM_TYPE_ALARM) {
                 AlarmSoundPlayer.play(context)
             }
@@ -139,11 +138,12 @@ class WeatherAlertWorker(
 
         // ── clicking the notification opens the app ────────────────────────
         val contentIntent = Intent(context, com.example.weatherbug.MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            action = ACTION_FROM_NOTIFICATION
+            flags  = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
         val contentPendingIntent = PendingIntent.getActivity(
             context,
-            notificationId + 20_000, 
+            notificationId + 20_000,
             contentIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -174,6 +174,7 @@ class WeatherAlertWorker(
         const val KEY_ALERT_ID = "alert_id"
         const val KEY_ALARM_TYPE = "alarm_type"
         const val KEY_CONDITION  = "weather_condition"
+        const val ACTION_FROM_NOTIFICATION = "com.example.weatherbug.ACTION_FROM_NOTIFICATION"
         private const val FALLBACK_NOTIFICATION_ID = 9999
     }
 }

@@ -84,6 +84,7 @@ fun FavouritesScreen(
 
     Scaffold(
         modifier = modifier,
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
         topBar = {
             TopAppBar(
                 title = {
@@ -104,7 +105,7 @@ fun FavouritesScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = androidx.compose.ui.graphics.Color.Transparent
                 )
             )
         },

@@ -23,10 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.weatherbug.R
 
-/**
- * Shown while any data section is loading.
- * Use [modifier] to set a fixed height so layout doesn't jump.
- */
 @Composable
 internal fun LoadingCard(modifier: Modifier = Modifier) {
     Card(
@@ -43,9 +39,7 @@ internal fun LoadingCard(modifier: Modifier = Modifier) {
     }
 }
 
-/**
- * Shown when a network call fails (non-internet errors, or partial failures).
- */
+
 @Composable
 internal fun ErrorCard(message: String, onRetry: () -> Unit) {
     Card(

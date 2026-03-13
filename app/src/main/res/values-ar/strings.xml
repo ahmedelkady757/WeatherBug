@@ -18,6 +18,7 @@
     <string name="home_humidity">الرطوبة</string>
     <string name="home_wind">الرياح</string>
     <string name="home_pressure">الضغط</string>
+    <string name="pressure_unit_home">هـ.ب.أ</string>
     <string name="home_clouds">الغيوم</string>
     <string name="home_hourly_forecast">توقعات كل ساعة</string>
     <string name="home_daily_forecast">توقعات ٧ أيام</string>
@@ -80,22 +81,22 @@
     <string name="alerts_delete_confirm">حذف</string>
     <string name="alerts_delete_cancel">إلغاء</string>
     <string name="alerts_delete_all_title">حذف جميع التنبيهات؟</string>
-    <string name="alerts_delete_all_body">سيتم حذف جميع التنبيهات المجدولة نهائياً.</string>
+    <string name="alerts_delete_all_body">سيتم حذف جميع التنبيهات نهائياً.</string>
     <string name="alerts_type_notification">إشعار</string>
     <string name="alerts_type_alarm">منبّه</string>
-    <string name="alerts_dialog_title">جدولة تنبيه</string>
+    <string name="alerts_dialog_title">جدولة منبه</string>
     <string name="alerts_dialog_start">وقت البدء</string>
     <string name="alerts_dialog_end">وقت الانتهاء</string>
     <string name="alerts_dialog_type">نوع التنبيه</string>
-    <string name="alerts_dialog_confirm">جدولة</string>
+    <string name="alerts_dialog_confirm">إضافة</string>
     <string name="alerts_dialog_cancel">إلغاء</string>
     <string name="alerts_dialog_condition">حالة الطقس</string>
     <string name="alerts_until">حتى %1$s</string>
 
     <!-- Weather conditions -->
     <string name="condition_any">أي طقس</string>
-    <string name="condition_rain">🌧 ممطر</string>
-    <string name="condition_snow">❄️ مثلج</string>
+    <string name="condition_rain">🌧 مطر</string>
+    <string name="condition_snow">❄️ ثلج</string>
     <string name="condition_thunderstorm">⛈ عاصفة رعدية</string>
     <string name="condition_clear">☀️ صافي</string>
     <string name="condition_clouds">☁️ غائم</string>

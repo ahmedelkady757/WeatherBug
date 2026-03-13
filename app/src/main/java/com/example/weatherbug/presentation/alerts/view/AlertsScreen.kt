@@ -72,6 +72,7 @@ fun AlertsScreen(modifier: Modifier = Modifier) {
 
     Scaffold(
         modifier    = modifier,
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
         topBar = {
             TopAppBar(
                 title = {
@@ -91,7 +92,7 @@ fun AlertsScreen(modifier: Modifier = Modifier) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = androidx.compose.ui.graphics.Color.Transparent
                 )
             )
         },
@@ -243,9 +244,8 @@ private fun AlertItemCard(alert: AlertItem) {
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors    = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
         )
     ) {
         Row(

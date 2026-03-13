@@ -1,7 +1,7 @@
 package com.example.weatherbug.presentation.home.view
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,15 +36,15 @@ internal fun HourlyForecastCard(items: List<HourlyForecastResponse.HourlyItem>) 
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors    = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
         )
     ) {
         Column(modifier = Modifier.padding(vertical = 16.dp)) {
             Text(
                 text       = stringResource(R.string.home_hourly_forecast),
                 style      = MaterialTheme.typography.titleMedium,
+                color      = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.SemiBold,
                 modifier   = Modifier.padding(horizontal = 16.dp)
             )
@@ -71,31 +70,39 @@ private fun HourlyItem(item: HourlyForecastResponse.HourlyItem) {
         pm = stringResource(R.string.home_pm)
     )
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        modifier            = Modifier
-            .width(90.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .padding(horizontal = 14.dp, vertical = 18.dp)
+    Card(
+        shape     = RoundedCornerShape(20.dp),
+        border    = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+        ),
+        colors    = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.30f)
+        ),
+        modifier  = Modifier.width(90.dp)
     ) {
-        Text(
-            text       = timeLabel,
-            style      = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Medium,
-            color      = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Image(
-            painter            = painterResource(WeatherIconMapper.getIcon(iconCode)),
-            contentDescription = null,
-            modifier           = Modifier.size(56.dp)
-        )
-        Text(
-            text       = "${item.main.temp.roundToInt()}°",
-            style      = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color      = MaterialTheme.colorScheme.onSurface
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier            = Modifier.padding(horizontal = 14.dp, vertical = 18.dp)
+        ) {
+            Text(
+                text       = timeLabel,
+                style      = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Medium,
+                color      = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Image(
+                painter            = painterResource(WeatherIconMapper.getIcon(iconCode)),
+                contentDescription = null,
+                modifier           = Modifier.size(56.dp)
+            )
+            Text(
+                text       = "${item.main.temp.roundToInt()}°",
+                style      = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color      = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
