@@ -218,14 +218,14 @@ private fun SwipeToDeleteAlertCard(
         confirmValueChange = { value ->
             if (value == SwipeToDismissBoxValue.EndToStart) {
                 onDelete()
-                true
-            } else false
+            }
+            false
         }
     )
 
     // Reset if the delete was cancelled by the confirm dialog
     LaunchedEffect(dismissState.currentValue) {
-        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+        if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
             dismissState.reset()
         }
     }
