@@ -27,17 +27,17 @@ class NetworkConnectivityObserver(context: Context) {
         val callback = object : ConnectivityManager.NetworkCallback() {
 
             override fun onAvailable(network: Network) {
-                AppLogger.d("NetworkConnectivityObserver: connection AVAILABLE")
+
                 trySend(true)
             }
 
             override fun onLost(network: Network) {
-                AppLogger.d("NetworkConnectivityObserver: connection LOST")
+
                 trySend(false)
             }
 
             override fun onUnavailable() {
-                AppLogger.d("NetworkConnectivityObserver: connection UNAVAILABLE")
+
                 trySend(false)
             }
 
@@ -50,7 +50,7 @@ class NetworkConnectivityObserver(context: Context) {
                 ) && networkCapabilities.hasCapability(
                     NetworkCapabilities.NET_CAPABILITY_VALIDATED
                 )
-                AppLogger.d("NetworkConnectivityObserver: capabilities changed → hasInternet=$hasInternet")
+
                 trySend(hasInternet)
             }
         }
@@ -62,7 +62,7 @@ class NetworkConnectivityObserver(context: Context) {
         connectivityManager.registerNetworkCallback(request, callback)
 
         awaitClose {
-            AppLogger.d("NetworkConnectivityObserver: unregistering network callback")
+
             connectivityManager.unregisterNetworkCallback(callback)
         }
 

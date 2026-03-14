@@ -7,7 +7,7 @@ import com.example.weatherbug.data.models.FavouriteWeatherItem
 import com.example.weatherbug.data.models.GeocodingItem
 import com.example.weatherbug.data.repo.WeatherRepo
 import com.example.weatherbug.core.navigation.Screen
-import com.example.weatherbug.core.util.AppLogger
+
 import com.example.weatherbug.core.util.Constants
 import com.example.weatherbug.core.util.ResponseState
 import com.google.android.gms.maps.model.LatLng
@@ -79,7 +79,7 @@ class MapPickerViewModel(
 
 
     fun onMapTapped(lat: Double, lon: Double) {
-        AppLogger.logVmEvent("MapPickerViewModel", "onMapTapped lat=$lat lon=$lon")
+
         _selectedLatLng.value   = LatLng(lat, lon)
         _resolvedCityName.value = ""
         resolveCityName(lat, lon)
@@ -88,10 +88,7 @@ class MapPickerViewModel(
 
     fun onPlaceSelected(item: GeocodingItem, appLanguage: String) {
         val localizedName = item.localizedName(appLanguage)
-        AppLogger.logVmEvent(
-            "MapPickerViewModel",
-            "onPlaceSelected lat=${item.lat} lon=${item.lon} city=$localizedName"
-        )
+
         _selectedLatLng.value   = LatLng(item.lat, item.lon)
         _resolvedCityName.value = localizedName
     }
@@ -100,14 +97,11 @@ class MapPickerViewModel(
     fun confirmPick(mode: String) {
         if (_isConfirming.value) return
         val latLng = _selectedLatLng.value ?: run {
-            AppLogger.logVmError("MapPickerViewModel", "confirmPick called with no pin placed")
+
             return
         }
 
-        AppLogger.logVmEvent(
-            "MapPickerViewModel",
-            "confirmPick mode=$mode lat=${latLng.latitude} lon=${latLng.longitude}"
-        )
+
 
         viewModelScope.launch {
             _isConfirming.value = true
@@ -115,7 +109,7 @@ class MapPickerViewModel(
                 Screen.MapPicker.MODE_SETTINGS  -> confirmSettings(latLng)
                 Screen.MapPicker.MODE_FAVOURITE -> confirmFavourite(latLng)
                 else -> {
-                    AppLogger.logVmError("MapPickerViewModel", "unknown mode: $mode")
+
                     _isConfirming.value = false
                 }
             }
@@ -126,10 +120,7 @@ class MapPickerViewModel(
         dataStore.saveLocation(latLng.latitude, latLng.longitude)
         // Also persist location mode as "map" so the app reopens correctly next launch
         dataStore.saveLocationMode("map")
-        AppLogger.logVmEvent(
-            "MapPickerViewModel",
-            "settings confirmed: saved lat=${latLng.latitude} lon=${latLng.longitude}"
-        )
+
         _isConfirming.value = false
         _events.emit(MapPickerEvent.NavigateBack)
     }
@@ -158,16 +149,13 @@ class MapPickerViewModel(
                 )
 
                 repo.insertFavourite(fav)
-                AppLogger.logVmEvent("MapPickerViewModel", "favourite saved: ${fav.cityName}")
+
                 _isConfirming.value = false
                 _events.emit(MapPickerEvent.NavigateBack)
             }
 
             is ResponseState.Failure -> {
-                AppLogger.logVmError(
-                    "MapPickerViewModel",
-                    "confirmFavourite failed: ${result.errorMessage}"
-                )
+
                 _isConfirming.value = false
                 _events.emit(MapPickerEvent.ShowError(result.errorMessage))
             }
@@ -184,14 +172,11 @@ class MapPickerViewModel(
                     val lang  = dataStore.effectiveLangFlow.first()  // resolved lang
                     val first = result.data.firstOrNull()
                     val name  = first?.localizedName(lang) ?: first?.name.orEmpty()
-                    AppLogger.logVmEvent("MapPickerViewModel", "geocoded city: $name")
+
                     _resolvedCityName.value = name
                 }
                 is ResponseState.Failure -> {
-                    AppLogger.logVmError(
-                        "MapPickerViewModel",
-                        "reverse-geocode failed: ${result.errorMessage}"
-                    )
+
                 }
                 ResponseState.Loading -> Unit
             }
@@ -229,7 +214,7 @@ class MapPickerViewModel(
             query
         }
 
-        AppLogger.logVmEvent("MapPickerViewModel", "performSearch query=$effectiveQuery")
+
         _isSearching.value = true
 
         when (val result = repo.getCoordinatesByCity(effectiveQuery, Constants.GEO_LIMIT)) {
@@ -250,19 +235,13 @@ class MapPickerViewModel(
                 )
                 _searchResults.value = prioritized
                 _searchError.value   = null
-                AppLogger.logVmEvent(
-                    "MapPickerViewModel",
-                    "search success: results=${result.data.size}"
-                )
+
             }
 
             is ResponseState.Failure -> {
                 _searchResults.value = emptyList()
                 _searchError.value   = result.errorMessage
-                AppLogger.logVmError(
-                    "MapPickerViewModel",
-                    "search failed: ${result.errorMessage}"
-                )
+
             }
 
             ResponseState.Loading -> Unit

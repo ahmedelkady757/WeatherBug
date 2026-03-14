@@ -8,7 +8,7 @@ import com.example.weatherbug.data.models.FavouriteWeatherItem
 import com.example.weatherbug.data.models.GeocodingItem
 import com.example.weatherbug.data.models.HourlyForecastResponse
 import com.example.weatherbug.data.models.WeatherResponse
-import com.example.weatherbug.core.util.AppLogger
+
 import com.example.weatherbug.core.util.ResponseState
 import kotlinx.coroutines.flow.Flow
 
@@ -26,16 +26,13 @@ class WeatherRepoImpl(
         units: String,
         lang:  String
     ): ResponseState<WeatherResponse> {
-        AppLogger.logRepoCall(
-            method = "getCurrentWeather",
-            params = "lat=$lat lon=$lon units=$units lang=$lang"
-        )
+
         return try {
             val result = remote.getCurrentWeather(lat, lon, units, lang)
-            AppLogger.d("getCurrentWeather success: city=${result.name}", "WB_REPO")
+
             ResponseState.Success(result)
         } catch (e: Exception) {
-            AppLogger.logRepoError("getCurrentWeather", e)
+
             ResponseState.Failure(e.message ?: "Unknown error fetching current weather")
         }
     }
@@ -47,16 +44,13 @@ class WeatherRepoImpl(
         units: String,
         lang:  String
     ): ResponseState<HourlyForecastResponse> {
-        AppLogger.logRepoCall(
-            method = "getHourlyForecast",
-            params = "lat=$lat lon=$lon cnt=$cnt units=$units lang=$lang"
-        )
+
         return try {
             val result = remote.getHourlyForecast(lat, lon, cnt, units, lang)
-            AppLogger.d("getHourlyForecast success: items=${result.list.size}", "WB_REPO")
+
             ResponseState.Success(result)
         } catch (e: Exception) {
-            AppLogger.logRepoError("getHourlyForecast", e)
+
             ResponseState.Failure(e.message ?: "Unknown error fetching hourly forecast")
         }
     }
@@ -68,16 +62,13 @@ class WeatherRepoImpl(
         units: String,
         lang:  String
     ): ResponseState<DailyForecastResponse> {
-        AppLogger.logRepoCall(
-            method = "getDailyForecast",
-            params = "lat=$lat lon=$lon cnt=$cnt units=$units lang=$lang"
-        )
+
         return try {
             val result = remote.getDailyForecast(lat, lon, cnt, units, lang)
-            AppLogger.d("getDailyForecast success: items=${result.list.size}", "WB_REPO")
+
             ResponseState.Success(result)
         } catch (e: Exception) {
-            AppLogger.logRepoError("getDailyForecast", e)
+
             ResponseState.Failure(e.message ?: "Unknown error fetching daily forecast")
         }
     }
@@ -88,16 +79,13 @@ class WeatherRepoImpl(
         cityName: String,
         limit:    Int
     ): ResponseState<List<GeocodingItem>> {
-        AppLogger.logRepoCall(
-            method = "getCoordinatesByCity",
-            params = "cityName=$cityName limit=$limit"
-        )
+
         return try {
             val result = remote.getCoordinatesByCity(cityName, limit)
-            AppLogger.d("getCoordinatesByCity success: results=${result.size}", "WB_REPO")
+
             ResponseState.Success(result)
         } catch (e: Exception) {
-            AppLogger.logRepoError("getCoordinatesByCity", e)
+
             ResponseState.Failure(e.message ?: "Unknown error fetching coordinates")
         }
     }
@@ -106,19 +94,13 @@ class WeatherRepoImpl(
         lat: Double,
         lon: Double
     ): ResponseState<List<GeocodingItem>> {
-        AppLogger.logRepoCall(
-            method = "getCityByCoordinates",
-            params = "lat=$lat lon=$lon"
-        )
+
         return try {
             val result = remote.getCityByCoordinates(lat, lon)
-            AppLogger.d(
-                "getCityByCoordinates success: city=${result.firstOrNull()?.name}",
-                "WB_REPO"
-            )
+
             ResponseState.Success(result)
         } catch (e: Exception) {
-            AppLogger.logRepoError("getCityByCoordinates", e)
+
             ResponseState.Failure(e.message ?: "Unknown error fetching city name")
         }
     }

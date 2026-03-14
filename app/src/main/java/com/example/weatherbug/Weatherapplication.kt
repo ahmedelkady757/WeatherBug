@@ -5,7 +5,7 @@ import androidx.work.Configuration
 import com.example.weatherbug.core.di.appModule
 import com.example.weatherbug.core.di.networkModule
 import com.example.weatherbug.core.di.repoModule
-import com.example.weatherbug.core.util.AppLogger
+
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.workmanager.factory.KoinWorkerFactory
@@ -30,7 +30,7 @@ class WeatherApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 
-        AppLogger.d("WeatherApplication: onCreate", "WB_GENERAL")
+
 
         startKoin {
             androidLogger(Level.DEBUG)

@@ -3,7 +3,7 @@ package com.example.weatherbug.presentation.settings.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherbug.data.datasource.local.IAppDataStore
-import com.example.weatherbug.core.util.AppLogger
+
 import com.example.weatherbug.core.util.Constants
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -48,28 +48,28 @@ class SettingsViewModel(
 
     fun setTheme(theme: String) {
         viewModelScope.launch {
-            AppLogger.logVmEvent("SettingsViewModel", "setTheme → $theme")
+
             dataStore.saveTheme(theme)
         }
     }
 
     fun setLanguage(lang: String) {
         viewModelScope.launch {
-            AppLogger.logVmEvent("SettingsViewModel", "setLanguage → $lang")
+
             dataStore.saveLanguage(lang)
         }
     }
 
     fun setTempUnit(unit: String) {
         viewModelScope.launch {
-            AppLogger.logVmEvent("SettingsViewModel", "setTempUnit → $unit")
+
             dataStore.saveTempUnit(unit)
         }
     }
 
     fun setWindUnit(unit: String) {
         viewModelScope.launch {
-            AppLogger.logVmEvent("SettingsViewModel", "setWindUnit → $unit")
+
             dataStore.saveWindUnit(unit)
         }
     }
@@ -77,16 +77,16 @@ class SettingsViewModel(
 
     fun setLocationMode(mode: String) {
         viewModelScope.launch {
-            AppLogger.logVmEvent("SettingsViewModel", "setLocationMode → $mode")
+
             dataStore.saveLocationMode(mode)
 
             when (mode) {
                 Constants.LOCATION_MAP -> {
-                    AppLogger.logVmEvent("SettingsViewModel", "mode=map → NavigateToMapPicker")
+
                     _navEvent.emit(SettingsNavEvent.NavigateToMapPicker)
                 }
                 Constants.LOCATION_GPS -> {
-                    AppLogger.logVmEvent("SettingsViewModel", "mode=gps → refreshLocation")
+
                     onRefreshGps()
                 }
             }

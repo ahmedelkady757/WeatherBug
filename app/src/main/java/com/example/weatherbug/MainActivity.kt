@@ -53,7 +53,7 @@ import com.example.weatherbug.core.navigation.NavGraph
 import com.example.weatherbug.core.navigation.Screen
 import com.example.weatherbug.presentation.location.LocationViewModel
 import com.example.weatherbug.ui.theme.WeatherBugTheme
-import com.example.weatherbug.core.util.AppLogger
+
 import com.example.weatherbug.core.util.Constants
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -84,7 +84,7 @@ class MainActivity : ComponentActivity() {
     ) { permissions ->
         val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
                 || permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-        AppLogger.logVmEvent("MainActivity", "permission result: granted=$granted")
+
         if (granted) {
             locationViewModel.onPermissionGranted()
         } else {
@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        AppLogger.logVmEvent("MainActivity", "onCreate")
+
 
         observePermissionRequests()
         checkExactAlarmPermission()
@@ -186,7 +186,7 @@ class MainActivity : ComponentActivity() {
     private fun handleIntent(currentIntent: Intent?) {
         if (currentIntent?.action == WeatherAlertWorker.ACTION_FROM_NOTIFICATION) {
             isLaunchedFromNotification = true
-            AppLogger.logVmEvent("MainActivity", "Launched from notification -> forcing Home screen")
+
             AlarmSoundPlayer.stop() // Stop background ringtone
             _navigateToHome.tryEmit(Unit)
             currentIntent.action = null // Clear so it doesn't trigger again on rotation
@@ -197,7 +197,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             locationViewModel.shouldRequestPermission.collect { should ->
                 if (should) {
-                    AppLogger.logVmEvent("MainActivity", "launching permission dialog")
+
                     locationPermissionLauncher.launch(
                         arrayOf(
                             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -362,7 +362,7 @@ fun WeatherBugBottomNav(
                 selected = isSelected,
                 onClick  = {
                     if (!isSelected) {
-                        AppLogger.logNavigation("BottomNav", item.route)
+
                         navController.navigate(item.route) {
                             popUpTo(Screen.Home.route) { saveState = true }
                             launchSingleTop = true

@@ -13,7 +13,7 @@ import com.example.weatherbug.presentation.location.LocationViewModel
 import com.example.weatherbug.presentation.map.view.MapPickerScreen
 import com.example.weatherbug.presentation.settings.view.SettingsScreen
 import com.example.weatherbug.presentation.splash.view.SplashScreen
-import com.example.weatherbug.core.util.AppLogger
+
 
 
 @Composable
@@ -29,7 +29,7 @@ fun NavGraph(
     ) {
 
         composable(route = Screen.Splash.route) {
-            AppLogger.logNavigation("NavGraph", "Splash")
+
             SplashScreen(
                 onNavigateToHome = {
                     navController.navigate(Screen.Home.route) {
@@ -42,25 +42,21 @@ fun NavGraph(
         }
 
         composable(route = Screen.Home.route) {
-            AppLogger.logNavigation("NavGraph", "Home")
+
             HomeScreen(locationViewModel = locationViewModel)
         }
 
         composable(route = Screen.Favourites.route) {
-            AppLogger.logNavigation("NavGraph", "Favourites")
+
             FavouritesScreen(
                 onAddFavourite = {
-                    AppLogger.logNavigation("NavGraph", "Favourites → MapPicker(favourite)")
+
                     navController.navigate(
                         Screen.MapPicker.createRoute(Screen.MapPicker.MODE_FAVOURITE)
                     )
                 },
                 onOpenFavouriteDetail = { lat, lon, cityName ->
-                    AppLogger.logNavigation(
-                        "NavGraph",
-                        "Favourites → FavouriteDetail",
-                        "city=$cityName"
-                    )
+
                     navController.navigate(
                         Screen.FavouriteDetail.createRoute(lat, lon, cityName)
                     )
@@ -69,16 +65,16 @@ fun NavGraph(
         }
 
         composable(route = Screen.Alerts.route) {
-            AppLogger.logNavigation("NavGraph", "Alerts")
+
             AlertsScreen()
         }
 
         composable(route = Screen.Settings.route) {
-            AppLogger.logNavigation("NavGraph", "Settings")
+
             SettingsScreen(
                 locationViewModel     = locationViewModel,
                 onNavigateToMapPicker = {
-                    AppLogger.logNavigation("NavGraph", "Settings → MapPicker(settings)")
+
                     navController.navigate(Screen.MapPicker.createRoute(Screen.MapPicker.MODE_SETTINGS))
                 }
             )
@@ -87,7 +83,7 @@ fun NavGraph(
         composable(route = Screen.MapPicker.route) { backStackEntry ->
             val mode = backStackEntry.arguments?.getString("mode")
                 ?: Screen.MapPicker.MODE_SETTINGS
-            AppLogger.logNavigation("NavGraph", "MapPicker", "mode=$mode")
+
             MapPickerScreen(
                 mode           = mode,
                 onNavigateBack = { navController.popBackStack() }
@@ -101,18 +97,10 @@ fun NavGraph(
             val city    = Screen.FavouriteDetail.decodeCityName(rawName)
 
             if (latArg == null || lonArg == null) {
-                AppLogger.logNavigation(
-                    "NavGraph",
-                    "FavouriteDetail",
-                    "Missing or invalid lat/lon, popping back stack"
-                )
+
                 navController.popBackStack()
             } else {
-                AppLogger.logNavigation(
-                    "NavGraph",
-                    "FavouriteDetail",
-                    "lat=$latArg lon=$lonArg city=$city"
-                )
+
                 FavouriteDetailScreen(
                     lat            = latArg,
                     lon            = lonArg,

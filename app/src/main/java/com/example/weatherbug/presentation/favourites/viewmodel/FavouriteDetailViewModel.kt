@@ -7,7 +7,7 @@ import com.example.weatherbug.data.models.DailyForecastResponse
 import com.example.weatherbug.data.models.HourlyForecastResponse
 import com.example.weatherbug.data.models.WeatherResponse
 import com.example.weatherbug.data.repo.WeatherRepo
-import com.example.weatherbug.core.util.AppLogger
+
 import com.example.weatherbug.core.util.Constants
 import com.example.weatherbug.core.util.ResponseState
 import kotlinx.coroutines.async
@@ -62,7 +62,7 @@ class FavouriteDetailViewModel(
                 .distinctUntilChanged()
                 .drop(1)
                 .collect {
-                    AppLogger.logVmEvent("FavouriteDetailViewModel", "settings changed → reload")
+
                     loadWeather()
                 }
         }
@@ -70,7 +70,7 @@ class FavouriteDetailViewModel(
 
 
     fun retry() {
-        AppLogger.logVmEvent("FavouriteDetailViewModel", "retry lat=$lat lon=$lon")
+
         loadWeather()
     }
 
@@ -80,10 +80,7 @@ class FavouriteDetailViewModel(
             val units = dataStore.tempUnitFlow.first()
             val lang  = dataStore.effectiveLangFlow.first()  // resolved lang, never "device"
 
-            AppLogger.logVmEvent(
-                "FavouriteDetailViewModel",
-                "loadWeather lat=$lat lon=$lon units=$units lang=$lang"
-            )
+
 
             _currentWeatherState.value = ResponseState.Loading
             _hourlyState.value         = ResponseState.Loading
@@ -101,13 +98,13 @@ class FavouriteDetailViewModel(
             }
 
             _currentWeatherState.value = currentDeferred.await().also {
-                AppLogger.logVmEvent("FavouriteDetailViewModel", "currentWeather → ${it::class.simpleName}")
+
             }
             _hourlyState.value = hourlyDeferred.await().also {
-                AppLogger.logVmEvent("FavouriteDetailViewModel", "hourly → ${it::class.simpleName}")
+
             }
             _dailyState.value = dailyDeferred.await().also {
-                AppLogger.logVmEvent("FavouriteDetailViewModel", "daily → ${it::class.simpleName}")
+
             }
         }
     }
