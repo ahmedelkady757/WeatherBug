@@ -8,7 +8,7 @@ import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.weatherbug.core.util.AppLogger
+
 import com.example.weatherbug.core.util.Constants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -40,28 +40,28 @@ class AppDataStore(private val context: Context) : IAppDataStore {
 
     override val themeFlow: Flow<String> = context.dataStore.data
         .catch { e ->
-            AppLogger.logDataStoreError(Constants.KEY_THEME, e)
+
         }
         .map { prefs ->
             val value = prefs[KEY_THEME] ?: Constants.THEME_LIGHT
-            AppLogger.logDataStoreRead(Constants.KEY_THEME, value)
+
             value
         }
 
     override val languageFlow: Flow<String> = context.dataStore.data
         .catch { e ->
-            AppLogger.logDataStoreError(Constants.KEY_LANGUAGE, e)
+
         }
         .map { prefs ->
             val value = prefs[KEY_LANGUAGE] ?: Constants.LANG_DEVICE
-            AppLogger.logDataStoreRead(Constants.KEY_LANGUAGE, value)
+
             value
         }
 
     override val effectiveLangFlow: Flow<String> = languageFlow.map { stored ->
         if (stored == Constants.LANG_DEVICE) {
             val deviceLang = context.resources.configuration.locales[0].language
-            AppLogger.logDataStoreRead("effectiveLang", "device → $deviceLang")
+
             deviceLang.ifBlank { Constants.LANG_ENGLISH }
         } else {
             stored
@@ -70,59 +70,59 @@ class AppDataStore(private val context: Context) : IAppDataStore {
 
     override  val tempUnitFlow: Flow<String> = context.dataStore.data
         .catch { e ->
-            AppLogger.logDataStoreError(Constants.KEY_TEMP_UNIT, e)
+
         }
         .map { prefs ->
             val value = prefs[KEY_TEMP_UNIT] ?: Constants.UNIT_METRIC
-            AppLogger.logDataStoreRead(Constants.KEY_TEMP_UNIT, value)
+
             value
         }
 
     override val locationModeFlow: Flow<String> = context.dataStore.data
         .catch { e ->
-            AppLogger.logDataStoreError(Constants.KEY_LOCATION_MODE, e)
+
         }
         .map { prefs ->
             val value = prefs[KEY_LOCATION_MODE] ?: Constants.LOCATION_GPS
-            AppLogger.logDataStoreRead(Constants.KEY_LOCATION_MODE, value)
+
             value
         }
 
     override val savedLatFlow: Flow<Double> = context.dataStore.data
         .catch { e ->
-            AppLogger.logDataStoreError(Constants.KEY_SAVED_LAT, e)
+
         }
         .map { prefs ->
             val value = prefs[KEY_SAVED_LAT] ?: Constants.FALLBACK_LAT
-            AppLogger.logDataStoreRead(Constants.KEY_SAVED_LAT, value)
+
             value
         }
 
     override val savedLonFlow: Flow<Double> = context.dataStore.data
         .catch { e ->
-            AppLogger.logDataStoreError(Constants.KEY_SAVED_LON, e)
+
         }
         .map { prefs ->
             val value = prefs[KEY_SAVED_LON] ?: Constants.FALLBACK_LON
-            AppLogger.logDataStoreRead(Constants.KEY_SAVED_LON, value)
+
             value
         }
 
     override val windUnitFlow: Flow<String> = context.dataStore.data
-        .catch { e -> AppLogger.logDataStoreError(Constants.KEY_WIND_UNIT, e) }
+        .catch {  }
         .map { prefs ->
             val value = prefs[KEY_WIND_UNIT] ?: Constants.WIND_UNIT_MS
-            AppLogger.logDataStoreRead(Constants.KEY_WIND_UNIT, value)
+
             value
         }
 
     override val isFirstLaunchFlow: Flow<Boolean> = context.dataStore.data
         .catch { e ->
-            AppLogger.logDataStoreError(Constants.KEY_IS_FIRST_LAUNCH, e)
+
         }
         .map { prefs ->
             val value = prefs[KEY_IS_FIRST_LAUNCH] ?: true
-            AppLogger.logDataStoreRead(Constants.KEY_IS_FIRST_LAUNCH, value)
+
             value
         }
 
@@ -130,28 +130,28 @@ class AppDataStore(private val context: Context) : IAppDataStore {
     override suspend fun saveTheme(theme: String) {
         context.dataStore.edit { prefs ->
             prefs[KEY_THEME] = theme
-            AppLogger.logDataStoreWrite(Constants.KEY_THEME, theme)
+
         }
     }
 
     override suspend fun saveLanguage(language: String) {
         context.dataStore.edit { prefs ->
             prefs[KEY_LANGUAGE] = language
-            AppLogger.logDataStoreWrite(Constants.KEY_LANGUAGE, language)
+
         }
     }
 
     override  suspend fun saveTempUnit(unit: String) {
         context.dataStore.edit { prefs ->
             prefs[KEY_TEMP_UNIT] = unit
-            AppLogger.logDataStoreWrite(Constants.KEY_TEMP_UNIT, unit)
+
         }
     }
 
     override suspend fun saveLocationMode(mode: String) {
         context.dataStore.edit { prefs ->
             prefs[KEY_LOCATION_MODE] = mode
-            AppLogger.logDataStoreWrite(Constants.KEY_LOCATION_MODE, mode)
+
         }
     }
 
@@ -159,30 +159,30 @@ class AppDataStore(private val context: Context) : IAppDataStore {
         context.dataStore.edit { prefs ->
             prefs[KEY_SAVED_LAT] = lat
             prefs[KEY_SAVED_LON] = lon
-            AppLogger.logDataStoreWrite(Constants.KEY_SAVED_LAT, lat)
-            AppLogger.logDataStoreWrite(Constants.KEY_SAVED_LON, lon)
+
+
         }
     }
 
     override suspend fun setFirstLaunchDone() {
         context.dataStore.edit { prefs ->
             prefs[KEY_IS_FIRST_LAUNCH] = false
-            AppLogger.logDataStoreWrite(Constants.KEY_IS_FIRST_LAUNCH, false)
+
         }
     }
 
     override suspend fun saveWindUnit(unit: String) {
         context.dataStore.edit { prefs ->
             prefs[KEY_WIND_UNIT] = unit
-            AppLogger.logDataStoreWrite(Constants.KEY_WIND_UNIT, unit)
+
         }
     }
 
     override  val gpsEnabledFlow: Flow<Boolean> = context.dataStore.data
-        .catch { e -> AppLogger.logDataStoreError(Constants.KEY_GPS_ENABLED, e) }
+        .catch {  }
         .map { prefs ->
             val value = prefs[KEY_GPS_ENABLED] ?: false  // default false = not yet granted
-            AppLogger.logDataStoreRead(Constants.KEY_GPS_ENABLED, value)
+
             value
         }
 
@@ -190,7 +190,7 @@ class AppDataStore(private val context: Context) : IAppDataStore {
     override suspend fun saveGpsEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[KEY_GPS_ENABLED] = enabled
-            AppLogger.logDataStoreWrite(Constants.KEY_GPS_ENABLED, enabled)
+
         }
     }
 }

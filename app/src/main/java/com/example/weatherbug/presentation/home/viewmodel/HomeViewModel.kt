@@ -7,7 +7,7 @@ import com.example.weatherbug.data.models.DailyForecastResponse
 import com.example.weatherbug.data.models.HourlyForecastResponse
 import com.example.weatherbug.data.models.WeatherResponse
 import com.example.weatherbug.data.repo.WeatherRepo
-import com.example.weatherbug.core.util.AppLogger
+
 import com.example.weatherbug.core.util.Constants
 import com.example.weatherbug.core.util.ResponseState
 import kotlinx.coroutines.async
@@ -77,10 +77,7 @@ class HomeViewModel(
             }
                 .distinctUntilChanged()
                 .collectLatest { (lat, lon, units, lang) ->
-                    AppLogger.logVmEvent(
-                        "HomeViewModel",
-                        "coords lat=$lat lon=$lon units=$units lang=$lang"
-                    )
+
                     loadWeather(lat, lon, units, lang)
                 }
         }
@@ -92,10 +89,7 @@ class HomeViewModel(
         units: String,
         lang:  String
     ) {
-        AppLogger.logVmEvent(
-            "HomeViewModel",
-            "loadWeather lat=$lat lon=$lon units=$units lang=$lang"
-        )
+
 
         _currentWeatherState.value = ResponseState.Loading
         _hourlyState.value         = ResponseState.Loading
@@ -112,13 +106,13 @@ class HomeViewModel(
         }
 
         _currentWeatherState.value = currentDeferred.await().also {
-            AppLogger.logVmEvent("HomeViewModel", "currentWeather → ${it::class.simpleName}")
+
         }
         _hourlyState.value = hourlyDeferred.await().also {
-            AppLogger.logVmEvent("HomeViewModel", "hourly → ${it::class.simpleName}")
+
         }
         _dailyState.value = dailyDeferred.await().also {
-            AppLogger.logVmEvent("HomeViewModel", "daily → ${it::class.simpleName}")
+
         }
     }
 
@@ -128,10 +122,7 @@ class HomeViewModel(
             val lon   = dataStore.savedLonFlow.first()
             val units = dataStore.tempUnitFlow.first()
             val lang  = dataStore.effectiveLangFlow.first()  // resolved lang
-            AppLogger.logVmEvent(
-                "HomeViewModel",
-                "retry lat=$lat lon=$lon units=$units lang=$lang"
-            )
+
             loadWeather(lat, lon, units, lang)
         }
     }

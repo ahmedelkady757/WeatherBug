@@ -4,7 +4,7 @@ import android.app.AlarmManager
 import android.content.Context
 import android.os.Build
 import com.example.weatherbug.data.models.AlertItem
-import com.example.weatherbug.core.util.AppLogger
+
 
 class AlarmScheduler(private val context: Context) {
 
@@ -32,14 +32,14 @@ class AlarmScheduler(private val context: Context) {
                 alert.startTime,
                 pendingIntent
             )
-            AppLogger.d("AlarmScheduler: scheduled EXACT alarm id=${alert.id} at ${alert.startTime}", "WB_ALERTS")
+
         } else {
             alarmManager.setAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 alert.startTime,
                 pendingIntent
             )
-            AppLogger.d("AlarmScheduler: scheduled INEXACT alarm id=${alert.id} at ${alert.startTime}", "WB_ALERTS")
+
         }
     }
 
@@ -51,6 +51,6 @@ class AlarmScheduler(private val context: Context) {
             weatherCondition = weatherCondition
         )
         alarmManager.cancel(pendingIntent)
-        AppLogger.d("AlarmScheduler: cancelled alarm id=$alertId", "WB_ALERTS")
+
     }
 }

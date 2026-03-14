@@ -13,7 +13,7 @@ import com.example.weatherbug.R
 import com.example.weatherbug.data.datasource.local.IAppDataStore
 import com.example.weatherbug.data.models.AlertItem
 import com.example.weatherbug.data.repo.WeatherRepo
-import com.example.weatherbug.core.util.AppLogger
+
 import com.example.weatherbug.core.util.Constants
 import com.example.weatherbug.core.util.ResponseState
 import kotlinx.coroutines.flow.first
@@ -36,7 +36,7 @@ class WeatherAlertWorker(
         val alarmType        = inputData.getString(KEY_ALARM_TYPE)  ?: AlertItem.ALARM_TYPE_NOTIFICATION
         val condition        = inputData.getString(KEY_CONDITION)   ?: AlertItem.CONDITION_ANY
 
-        AppLogger.d("WeatherAlertWorker: doWork START alertId=$alertId alarmType=$alarmType condition=$condition", "WB_ALERTS")
+
 
         val lat      = dataStore.savedLatFlow.first()
         val lon      = dataStore.savedLonFlow.first()
@@ -50,14 +50,14 @@ class WeatherAlertWorker(
             val w          = weatherResult.data
             val apiMain    = w.weather.firstOrNull()?.main ?: ""
 
-            AppLogger.d("WeatherAlertWorker: fetched condition=$apiMain (requested=$condition)", "WB_ALERTS")
+
             
             if (!AlertItem.matches(condition, apiMain)) {
-                AppLogger.d("WeatherAlertWorker: Condition MISMATCH. Skipping notification.", "WB_ALERTS")
+
                 rescheduleForNextDay(alertId)
                 return Result.success()
             }
-            AppLogger.d("WeatherAlertWorker: Condition MATCH. Proceeding to notification.", "WB_ALERTS")
+
 
             val tempSymbol = when (units) {
                 Constants.UNIT_IMPERIAL -> "°F"
@@ -119,7 +119,7 @@ class WeatherAlertWorker(
                 val nextAlert = alert.copy(startTime = newStart, endTime = newStart)
                 repo.insertAlert(nextAlert)
                 scheduler.schedule(nextAlert)
-                AppLogger.d("WeatherAlertWorker: Rescheduled alert $alertId for tomorrow at $newStart", "WB_ALERTS")
+
             }
         }
     }
