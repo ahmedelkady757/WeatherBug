@@ -105,12 +105,12 @@ class HomeViewModelTest {
 
     @Test
     fun homeViewModel_init_loadsWeatherSuccessfully() = runTest(testDispatcher) {
-        // Arrange is done in setUp
+        // Given is done in setUp
 
-        // Act
+        // When
         advanceUntilIdle()
 
-        // Assert
+        // Then
         val currentState = viewModel.currentWeatherState.value
         assertThat(currentState is ResponseState.Success, `is`(true))
         val currentData = (currentState as ResponseState.Success).data
@@ -119,21 +119,21 @@ class HomeViewModelTest {
 
     @Test
     fun homeViewModel_retry_reloadsWeather() = runTest(testDispatcher) {
-        // Arrange
+        // Given
         advanceUntilIdle() // let init finish
 
-        // Act
+        // When
         viewModel.retry()
         advanceUntilIdle()
 
-        // Assert
+        // Then
         val hourlyState = viewModel.hourlyState.value
         assertThat(hourlyState is ResponseState.Success, `is`(true))
     }
 
     @Test
     fun homeViewModel_errorInRepo_showsFailureState() = runTest(testDispatcher) {
-        // Arrange
+        // Given
         coEvery { 
             fakeRepo.getCurrentWeather(any(), any(), any(), any()) 
         } returns ResponseState.Failure("Network Error")
@@ -141,10 +141,10 @@ class HomeViewModelTest {
         // Re-init viewmodel to trigger error state
         viewModel = HomeViewModel(fakeRepo, fakeDataStore)
 
-        // Act
+        // When
         advanceUntilIdle()
 
-        // Assert
+        // Then
         val currentState = viewModel.currentWeatherState.value
         assertThat(currentState is ResponseState.Failure, `is`(true))
         val errorMessage = (currentState as ResponseState.Failure).errorMessage
