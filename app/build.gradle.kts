@@ -85,11 +85,22 @@ dependencies {
 
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
-    implementation("io.coil-kt:coil-compose:2.6.0") // for weather icons
+    implementation("io.coil-kt:coil-compose:2.6.0")
 
     testImplementation(libs.junit)
+    testImplementation("org.hamcrest:hamcrest:2.2")
+    testImplementation("org.hamcrest:hamcrest-library:2.2")
+    testImplementation("androidx.test:core-ktx:1.5.0")
+    testImplementation("androidx.test.ext:junit-ktx:1.1.5")
+    testImplementation("org.robolectric:robolectric:4.11.1")
+    testImplementation("io.mockk:mockk-android:1.13.11")
+    testImplementation("io.mockk:mockk-agent:1.13.11")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
