@@ -79,7 +79,7 @@ class SettingsViewModelTest {
         val events = mutableListOf<SettingsNavEvent>()
         
         // When
-        val job = backgroundScope.launch {
+        val job = launch(kotlinx.coroutines.test.UnconfinedTestDispatcher(testScheduler)) {
             viewModel.navEvent.collect { events.add(it) }
         }
         viewModel.setLocationMode(newMode)
