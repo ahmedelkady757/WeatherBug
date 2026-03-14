@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">WeatherBug</string>
+
+    <string name="no_internet_title">لا يوجد اتصال بالإنترنت</string>
+    <string name="no_internet_subtitle">من فضلك تحقق من الاتصال وحاول مرة أخرى</string>
+    <string name="no_internet_icon_desc">أيقونة عدم وجود اتصال بالإنترنت</string>
+
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_favourites">المفضلة</string>
+    <string name="nav_alerts">التنبيهات</string>
+    <string name="nav_settings">الإعدادات</string>
+
+    <string name="splash_tagline">طقسك في كل مكان</string>
+
+    <string name="home_feels_like">محسوس %1$d°</string>
+    <string name="home_humidity">الرطوبة</string>
+    <string name="home_wind">الرياح</string>
+    <string name="home_pressure">الضغط</string>
+    <string name="pressure_unit_home">هـ.ب.أ</string>
+    <string name="home_clouds">الغيوم</string>
+    <string name="home_hourly_forecast">توقعات كل ساعة</string>
+    <string name="home_daily_forecast">توقعات ٧ أيام</string>
+    <string name="home_retry">إعادة المحاولة</string>
+    <string name="home_am">ص</string>
+    <string name="home_pm">م</string>
+
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_theme">المظهر</string>
+    <string name="settings_theme_light">فاتح</string>
+    <string name="settings_theme_dark">داكن</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_lang_device">جهازي</string>
+    <string name="settings_lang_english">الإنجليزية</string>
+    <string name="settings_lang_arabic">العربية</string>
+    <string name="settings_temp_unit">وحدة الحرارة</string>
+    <string name="settings_unit_celsius">درجة مئوية C°</string>
+    <string name="settings_unit_fahrenheit">فهرنهايت F°</string>
+    <string name="settings_unit_kelvin">كلفن K°</string>
+    <string name="settings_location_mode">مصدر الموقع</string>
+    <string name="settings_location_gps">نظام تحديد الموقع</string>
+    <string name="settings_location_map">الخريطة</string>
+    <string name="settings_wind_unit">وحدة سرعة الرياح</string>
+    <string name="settings_wind_ms">م/ث</string>
+    <string name="settings_wind_mph">ميل/س</string>
+    <string name="settings_wind_kmh">كم/س</string>
+
+    <string name="location_permission_title">صلاحية الموقع مطلوبة</string>
+    <string name="location_permission_settings_message">تم رفض صلاحية الموقع بشكل دائم. من فضلك فعّلها من إعدادات التطبيق.</string>
+    <string name="location_permission_open_settings">فتح الإعدادات</string>
+
+    <string name="favourites_empty_title">لا توجد مفضلات بعد</string>
+    <string name="favourites_empty_subtitle">اضغط + لإضافة موقعك المفضل الأول</string>
+    <string name="favourites_add">إضافة مفضلة</string>
+    <string name="favourites_delete_item">حذف المفضلة</string>
+    <string name="favourites_delete_one_title">إزالة المفضلة؟</string>
+    <string name="favourites_delete_one_body">إزالة %1$s من مفضلاتك؟</string>
+    <string name="favourites_delete_confirm">حذف</string>
+    <string name="favourites_delete_cancel">إلغاء</string>
+    <string name="favourites_delete_all_title">حذف جميع المفضلات</string>
+    <string name="favourites_delete_all_body">سيؤدي هذا إلى إزالة جميع مواقعك المحفوظة. لا يمكن التراجع عن هذا الإجراء.</string>
+    <string name="favourites_delete_all_confirm">حذف الكل</string>
+    <string name="favourites_delete_all_cancel">إلغاء</string>
+
+
+    <string name="map_picker_title_settings">اختر موقعك</string>
+    <string name="map_picker_title_favourite">إضافة موقع مفضل</string>
+    <string name="map_picker_back">رجوع</string>
+    <string name="map_picker_search_hint">ابحث عن مدينة…</string>
+    <string name="map_picker_tap_hint">اضغط في أي مكان على الخريطة لوضع دبوس</string>
+    <string name="map_picker_confirm">تأكيد الموقع</string>
+
+    <string name="alerts_title">تنبيهات الطقس</string>
+    <string name="alerts_empty_title">لا توجد تنبيهات</string>
+    <string name="alerts_empty_subtitle">اضغط + لجدولة تنبيه طقس</string>
+    <string name="alerts_add">إضافة تنبيه</string>
+    <string name="alerts_delete_all">حذف جميع التنبيهات</string>
+    <string name="alerts_delete_one_title">حذف التنبيه؟</string>
+    <string name="alerts_delete_one_body">سيتم حذف هذا التنبيه نهائياً.</string>
+    <string name="alerts_delete_confirm">حذف</string>
+    <string name="alerts_delete_cancel">إلغاء</string>
+    <string name="alerts_delete_all_title">حذف جميع التنبيهات؟</string>
+    <string name="alerts_delete_all_body">سيتم حذف جميع التنبيهات نهائياً.</string>
+    <string name="alerts_type_notification">إشعار</string>
+    <string name="alerts_type_alarm">منبّه</string>
+    <string name="alerts_dialog_title">جدولة منبه</string>
+    <string name="alerts_dialog_start">وقت البدء</string>
+    <string name="alerts_dialog_end">وقت الانتهاء</string>
+    <string name="alerts_dialog_type">نوع التنبيه</string>
+    <string name="alerts_dialog_confirm">إضافة</string>
+    <string name="alerts_dialog_cancel">إلغاء</string>
+    <string name="alerts_dialog_condition">حالة الطقس</string>
+    <string name="alerts_dialog_error_past_time">يجب أن يكون في المستقبل</string>
+    <string name="alerts_dialog_error_end_before_start">يجب أن يكون بعد البدء</string>
+    <string name="alerts_until">حتى %1$s</string>
+
+    <!-- Weather conditions -->
+    <string name="condition_any">أي طقس</string>
+    <string name="condition_rain">🌧 مطر</string>
+    <string name="condition_snow">❄️ ثلج</string>
+    <string name="condition_thunderstorm">⛈ عاصفة رعدية</string>
+    <string name="condition_clear">☀️ صافي</string>
+    <string name="condition_clouds">☁️ غائم</string>
+    <string name="condition_fog">🌫 ضباب</string>
+
+    <string name="alert_channel_name">تنبيهات الطقس</string>
+    <string name="alert_channel_desc">تنبيهات حالة الطقس في الوقت المحدد</string>
+    <string name="alert_stop_alarm">إيقاف المنبه</string>
+    <string name="alert_notification_title">&#x2601; تنبيه الطقس &#x2014; %1$s</string>
+    <string name="alert_notification_body">&#x1F321; %1$d%2$s (يبدو %3$d%4$s) &#x2022; %5$s\n&#x1F4A7; الرطوبة: %6$d%% &#x2022; &#x1F4A8; الرياح: %7$d %8$s</string>
+
+</resources>
