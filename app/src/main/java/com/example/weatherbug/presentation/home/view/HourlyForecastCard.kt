@@ -79,7 +79,7 @@ private fun HourlyItem(item: HourlyForecastResponse.HourlyItem) {
         colors    = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.10f)
         ),
-        modifier  = Modifier.width(90.dp)
+        modifier  = Modifier.width(90.dp).height(160.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

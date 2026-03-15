@@ -52,6 +52,9 @@ class FavouriteDetailViewModel(
     val dailyState: StateFlow<ResponseState<DailyForecastResponse>> =
         _dailyState.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
 
     init {
         loadWeather()
@@ -72,6 +75,31 @@ class FavouriteDetailViewModel(
     fun retry() {
 
         loadWeather()
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            val units = dataStore.tempUnitFlow.first()
+            val lang  = dataStore.effectiveLangFlow.first()
+
+            _isRefreshing.value = true
+
+            val currentDeferred = async {
+                repo.getCurrentWeather(lat, lon, units, lang)
+            }
+            val hourlyDeferred = async {
+                repo.getHourlyForecast(lat, lon, Constants.HOURLY_COUNT, units, lang)
+            }
+            val dailyDeferred = async {
+                repo.getDailyForecast(lat, lon, Constants.DAILY_COUNT, units, lang)
+            }
+
+            _currentWeatherState.value = currentDeferred.await()
+            _hourlyState.value = hourlyDeferred.await()
+            _dailyState.value = dailyDeferred.await()
+
+            _isRefreshing.value = false
+        }
     }
 
 
