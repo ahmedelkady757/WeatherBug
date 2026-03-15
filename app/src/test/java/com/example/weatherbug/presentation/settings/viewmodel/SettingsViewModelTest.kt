@@ -1,13 +1,11 @@
 package com.example.weatherbug.presentation.settings.viewmodel
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.weatherbug.core.util.Constants
 import com.example.weatherbug.data.datasource.local.IAppDataStore
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -19,17 +17,11 @@ import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class SettingsViewModelTest {
 
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
 
     private lateinit var viewModel: SettingsViewModel
     private lateinit var fakeDataStore: IAppDataStore
@@ -60,7 +52,7 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun settingsViewModel_setTheme_savesToDataStore() = runTest(testDispatcher) {
+    fun setTheme_darkTheme_savesToDataStore() = runTest(testDispatcher) {
         // Given
         val newTheme = Constants.THEME_DARK
 
@@ -73,7 +65,7 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun settingsViewModel_setLocationModeMap_emitsNavigateEvent() = runTest(testDispatcher) {
+    fun setLocationModeMap_locationMap_emitsNavigateEvent() = runTest(testDispatcher) {
         // Given
         val newMode = Constants.LOCATION_MAP
         val events = mutableListOf<SettingsNavEvent>()
@@ -94,7 +86,7 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun settingsViewModel_setLocationModeGps_refreshesGps() = runTest(testDispatcher) {
+    fun setLocationModeGps_locationGps_refreshesGps() = runTest(testDispatcher) {
         // Given
         val newMode = Constants.LOCATION_GPS
         

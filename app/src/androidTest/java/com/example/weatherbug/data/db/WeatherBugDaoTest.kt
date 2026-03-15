@@ -17,13 +17,11 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 class WeatherBugDaoTest {
 
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
 
     private lateinit var database: WeatherBugDatabase
     private lateinit var dao: WeatherBugDao
@@ -33,7 +31,7 @@ class WeatherBugDaoTest {
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
             WeatherBugDatabase::class.java
-        ).allowMainThreadQueries().build()
+        ).build()
         dao = database.weatherBugDao()
     }
 
@@ -43,7 +41,7 @@ class WeatherBugDaoTest {
     }
 
     @Test
-    fun weatherBugDao_insertFavourite_savesToDatabase() = runTest {
+    fun insertFavourite_oneFavouriteItem_savesToDatabase() = runTest {
         // Given
         val item = FavouriteWeatherItem(
             id = 1, cityName = "Alex", country = "EG", lat = 31.0, lon = 29.0, temp = 20.0, icon = "", description = "Sunny"
@@ -59,7 +57,7 @@ class WeatherBugDaoTest {
     }
 
     @Test
-    fun weatherBugDao_deleteFavourite_removesFromDatabase() = runTest {
+    fun deleteFavourite_oneFavouriteItem_removesFromDatabase() = runTest {
         // Given
         val item = FavouriteWeatherItem(
             id = 2, cityName = "Cairo", country = "EG", lat = 30.0, lon = 31.0, temp = 30.0, icon = "", description = "Hot"
@@ -75,7 +73,7 @@ class WeatherBugDaoTest {
     }
 
     @Test
-    fun weatherBugDao_deleteAllFavourites_clearsTable() = runTest {
+    fun deleteAllFavourites_twoFavouriteItem_clearsTable() = runTest {
         // Given
         val item1 = FavouriteWeatherItem(id = 1, cityName = "A", country = "EG", lat = 0.0, lon = 0.0, temp = 0.0, icon = "", description = "")
         val item2 = FavouriteWeatherItem(id = 2, cityName = "B", country = "EG", lat = 0.0, lon = 0.0, temp = 0.0, icon = "", description = "")
