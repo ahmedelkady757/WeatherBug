@@ -24,6 +24,8 @@ import com.example.weatherbug.core.util.ResponseState
 import com.example.weatherbug.core.util.NoInternetScreen
 import com.example.weatherbug.core.util.isNoInternetError
 import org.koin.androidx.compose.koinViewModel
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 
 
 @Composable
@@ -38,6 +40,7 @@ fun HomeScreen(
     val appLang        by viewModel.appLanguage.collectAsStateWithLifecycle()
     val tempUnit       by viewModel.tempUnit.collectAsStateWithLifecycle()
     val windUnit       by viewModel.windUnit.collectAsStateWithLifecycle()
+    val isRefreshing   by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
     WeatherContent(
         currentWeatherState = currentWeather,
@@ -45,11 +48,14 @@ fun HomeScreen(
         dailyState          = dailyState,
         appLanguage         = appLang,
         windUnit            = windUnit,
-        onRetry             = { viewModel.retry() }
+        isRefreshing        = isRefreshing,
+        onRetry             = { viewModel.retry() },
+        onRefresh           = { viewModel.refresh() }
     )
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherContent(
     currentWeatherState: ResponseState<WeatherResponse>,
@@ -57,7 +63,9 @@ fun WeatherContent(
     dailyState:          ResponseState<DailyForecastResponse>,
     appLanguage:         String,
     windUnit:            String,
+    isRefreshing:        Boolean,
     onRetry:             () -> Unit,
+    onRefresh:           () -> Unit,
     modifier:            Modifier = Modifier
 ) {
     if (currentWeatherState is ResponseState.Failure &&
@@ -67,13 +75,18 @@ fun WeatherContent(
         return
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = modifier.fillMaxSize()
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
         when (val state = currentWeatherState) {
             is ResponseState.Loading -> LoadingCard(modifier = Modifier.height(320.dp))
             is ResponseState.Failure -> ErrorCard(message = state.errorMessage, onRetry = onRetry)
@@ -104,4 +117,5 @@ fun WeatherContent(
 
         Spacer(modifier = Modifier.height(16.dp))
     }
+}
 }

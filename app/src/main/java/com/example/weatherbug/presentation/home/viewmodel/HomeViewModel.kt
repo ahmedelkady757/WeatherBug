@@ -64,6 +64,9 @@ class HomeViewModel(
     val dailyState: StateFlow<ResponseState<DailyForecastResponse>> =
         _dailyState.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     init {
 
         viewModelScope.launch {
@@ -124,6 +127,32 @@ class HomeViewModel(
             val lang  = dataStore.effectiveLangFlow.first()  // resolved lang
 
             loadWeather(lat, lon, units, lang)
+        }
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            val lat   = dataStore.savedLatFlow.first()
+            val lon   = dataStore.savedLonFlow.first()
+            val units = dataStore.tempUnitFlow.first()
+            val lang  = dataStore.effectiveLangFlow.first()
+
+            val currentDeferred = viewModelScope.async {
+                repo.getCurrentWeather(lat, lon, units, lang)
+            }
+            val hourlyDeferred = viewModelScope.async {
+                repo.getHourlyForecast(lat, lon, Constants.HOURLY_COUNT, units, lang)
+            }
+            val dailyDeferred = viewModelScope.async {
+                repo.getDailyForecast(lat, lon, Constants.DAILY_COUNT, units, lang)
+            }
+
+            _currentWeatherState.value = currentDeferred.await()
+            _hourlyState.value = hourlyDeferred.await()
+            _dailyState.value = dailyDeferred.await()
+
+            _isRefreshing.value = false
         }
     }
 
