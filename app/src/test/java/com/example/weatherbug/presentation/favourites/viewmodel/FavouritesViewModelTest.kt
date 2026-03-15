@@ -24,8 +24,6 @@ import org.robolectric.RobolectricTestRunner
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.hamcrest.CoreMatchers.instanceOf
 
-@ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class FavouritesViewModelTest {
 
     @get:Rule
@@ -63,7 +61,7 @@ class FavouritesViewModelTest {
     }
 
     @Test
-    fun favouritesViewModel_requestDeleteOne_updatesActiveDialog() = runTest(testDispatcher) {
+    fun requestDeleteOne_oneItem_updatesActiveDialog() = runTest(testDispatcher) {
         // Given (done in setup)
 
         // When
@@ -77,7 +75,7 @@ class FavouritesViewModelTest {
     }
 
     @Test
-    fun favouritesViewModel_confirmDeleteOne_deletesItemAndDismissesDialog() = runTest(testDispatcher) {
+    fun confirmDeleteOne_requestDeleteOne_deletesItemAndDismissesDialog() = runTest(testDispatcher) {
         // Given
         viewModel.requestDeleteOne(favItem)
         advanceUntilIdle()
@@ -92,7 +90,7 @@ class FavouritesViewModelTest {
     }
 
     @Test
-    fun favouritesViewModel_requestAddFavourite_updatesAddingState() = runTest(testDispatcher) {
+    fun requestAddFavourite_loadingNavigate_updatesAddingState() = runTest(testDispatcher) {
         // Given
         var navigated = false
         val navigateLambda = { navigated = true }
