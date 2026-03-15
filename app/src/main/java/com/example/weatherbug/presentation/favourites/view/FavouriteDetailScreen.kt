@@ -45,6 +45,7 @@ fun FavouriteDetailScreen(
     val currentWeather by viewModel.currentWeatherState.collectAsStateWithLifecycle()
     val hourlyState    by viewModel.hourlyState.collectAsStateWithLifecycle()
     val dailyState     by viewModel.dailyState.collectAsStateWithLifecycle()
+    val isRefreshing   by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val windUnitLabel = if (tempUnit == Constants.UNIT_IMPERIAL)
         Constants.WIND_IMPERIAL_LABEL
     else
@@ -93,7 +94,9 @@ fun FavouriteDetailScreen(
                 dailyState          = dailyState,
                 appLanguage         = appLanguage,
                 windUnit            = windUnitLabel,
-                onRetry             = { viewModel.retry() }
+                isRefreshing        = isRefreshing,
+                onRetry             = { viewModel.retry() },
+                onRefresh           = { viewModel.refresh() }
             )
         }
     }
