@@ -1,28 +1,21 @@
 package com.example.weatherbug.data.repo
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.weatherbug.core.util.ResponseState
 import com.example.weatherbug.data.datasource.local.ILocalDataSource
 import com.example.weatherbug.data.datasource.remote.IRemoteDataSource
 import com.example.weatherbug.data.models.*
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class WeatherRepoImplTest {
 
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var repo: WeatherRepoImpl
     private lateinit var fakeRemote: IRemoteDataSource
@@ -36,7 +29,7 @@ class WeatherRepoImplTest {
     }
 
     @Test
-    fun weatherRepoImpl_getCurrentWeather_returnsSuccess() = runTest {
+    fun getCurrentWeather_WeatherResponse_returnsSuccess() = runTest {
         // Given
         val response = WeatherResponse(
             coord = CoordData(31.0, 30.0),
@@ -64,7 +57,7 @@ class WeatherRepoImplTest {
     }
 
     @Test
-    fun weatherRepoImpl_getCurrentWeather_returnsFailureOnError() = runTest {
+    fun getCurrentWeather_Exception_returnsFailureOnError() = runTest {
         // Given
         coEvery { fakeRemote.getCurrentWeather(any(), any(), any(), any()) } throws Exception("Network Error")
 
@@ -77,7 +70,7 @@ class WeatherRepoImplTest {
     }
 
     @Test
-    fun weatherRepoImpl_getCityByCoordinates_returnsSuccess() = runTest {
+    fun getCityByCoordinates_GeocodingItem_returnsSuccess() = runTest {
         // Given
         val item = GeocodingItem(
             name = "Cairo",

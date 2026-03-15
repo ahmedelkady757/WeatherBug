@@ -1,6 +1,5 @@
 package com.example.weatherbug.presentation.home.viewmodel
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.weatherbug.core.util.Constants
 import com.example.weatherbug.core.util.ResponseState
 import com.example.weatherbug.data.datasource.local.IAppDataStore
@@ -9,7 +8,6 @@ import com.example.weatherbug.data.repo.WeatherRepo
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -19,18 +17,12 @@ import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+
 import kotlinx.coroutines.test.advanceUntilIdle
 
-@ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class HomeViewModelTest {
 
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var viewModel: HomeViewModel
     private lateinit var fakeRepo: WeatherRepo
@@ -104,7 +96,7 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun homeViewModel_init_loadsWeatherSuccessfully() = runTest(testDispatcher) {
+    fun getCurrentWeatherAndGetHourlyForecastAndGetDailyForecast_latAndLonAndUnitAndLang_loadsWeatherSuccessfully() = runTest(testDispatcher) {
         // Given is done in setUp
 
         // When
@@ -118,9 +110,8 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun homeViewModel_retry_reloadsWeather() = runTest(testDispatcher) {
-        // Given
-        advanceUntilIdle() // let init finish
+    fun retry_reloadsWeather() = runTest(testDispatcher) {
+        // Given is done in setUp
 
         // When
         viewModel.retry()
@@ -132,7 +123,7 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun homeViewModel_errorInRepo_showsFailureState() = runTest(testDispatcher) {
+    fun getCurrentWeather_anyMockData_showsFailureState() = runTest(testDispatcher) {
         // Given
         coEvery { 
             fakeRepo.getCurrentWeather(any(), any(), any(), any()) 
